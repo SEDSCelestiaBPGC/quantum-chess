@@ -20,4 +20,4 @@ Here are some resources you can explore:
 
 3. [Microsoft's Q# Documentation- Very handy!](https://docs.microsoft.com/en-gb/quantum/)
 
-
+4. [Hackaday's Quantum Computing Thorugh Comics project, hosted by Dr. Kitty Yeung](https://hackaday.io/project/168554-quantum-computing-through-comics)
