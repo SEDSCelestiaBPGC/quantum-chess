@@ -1,10 +1,10 @@
-# quantum-algorithms
+# quantum-chess
 
-Hi! Welcome to the QOSI Quantum Algorithms repo.
+Hi! Welcome to the QOSI Quantum Chess repo.
+This project aims to build a fully functional quantum chessboard, on which two players can play a game. Quantum chess differs from classical chess in that it lends various quantum abilities to its pieces in the form of superposition (as though you are playing on two boards at once!) and entanglement(moving one affects the other!). This offers a twist to the age old game and helps us demonstrate these quantum phenomena.
 
-While this is a part of an initiative for open source projects, this project will initially focus more on learning Q#, basic quantum computing concepts and a few quantum algorithms. We will do this primarily using Microsoft's Quantum Katas.
-
-Once we are comfortable with the language, we will move on to the main project- building the CHSH game. While the Katas already have a tutorial for this, we will try to build this on our own, with a few additions. Our aim is to demonstrate that a quantum strategy is better than a classical one in this particular game.
+We will begin by covering the basics of Q#.
+Once we are comfortable with the language, we will move on to the main project- building the quantum chessboard. 
 
 Pre-requisites:
 1. Linear algebra
@@ -12,12 +12,12 @@ Pre-requisites:
 
 It's okay if you aren't very well versed in these topics, we will only need the basics, and we'll brush up on those too.
 
+You can find the rules for quantum chess [here](https://github.com/caphindsight/TrulyQuantumChess/wiki).
+
+You can find a few boards to play [here](https://quantumchess.net/) and [here](https://truly-quantum-chess.sloppy.zone/).
+
 Here are some resources you can explore:
 
 1. [Microsoft's Quantum Katas](https://github.com/Microsoft/QuantumKatas/)
 
-2. [Quirk- An Excellent Quantum Circuit Simulator](https://algassert.com/quirk#circuit=%7B%22cols%22:[]%7D)
-
-3. [Microsoft's Q# Documentation- Very handy!](https://docs.microsoft.com/en-gb/quantum/)
-
-4. [Hackaday's Quantum Computing Through Comics project, hosted by Dr. Kitty Yeung](https://hackaday.io/project/168554-quantum-computing-through-comics)
+2. [Microsoft's Q# Documentation- Very handy!](https://docs.microsoft.com/en-gb/quantum/)
