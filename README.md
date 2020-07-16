@@ -9,6 +9,7 @@ Once we are comfortable with the language, we will move on to the main project- 
 Pre-requisites:
 1. Linear algebra
 2. Complex numbers
+
 We will only need the basics, and we'll brush up on those too.
 
 You can find the rules for quantum chess [here](https://github.com/caphindsight/TrulyQuantumChess/wiki) and [here](https://chess.stackexchange.com/questions/18278/what-are-the-rules-of-quantum-chess).
