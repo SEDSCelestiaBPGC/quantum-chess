@@ -31,7 +31,6 @@ def make_board():
         board.blit(col_text, ((i*sq_dim)+22, board_height+8))
         board.blit(row_text, ((board_width+10), (i*sq_dim)+22))
 
-
     pygame.draw.lines(board, black, True, [(0,0), (board_width, 0), (board_width, board_height), (0, board_height)], 2)
 
     pygame.display.flip()
