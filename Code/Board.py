@@ -68,7 +68,7 @@ def nearest_center (pos_mouse):
     return new_pos
 
 
-#function to test valid move of rooks
+#function to test valid move of rooks..
 def valid_move_rook (old_pos_name,new_pos_name):
     if old_pos_name[slice(1)] == new_pos_name[slice(1)]:
         return True
