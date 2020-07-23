@@ -7,8 +7,9 @@ We will begin by covering the basics of Q#.
 Once we are comfortable with the language, we will move on to the main project- building the quantum chessboard. 
 
 Pre-requisites:
-1. Linear algebra
-2. Complex numbers
+1. Python
+2. Linear algebra
+3. Complex numbers
 
 We will only need the basics, and we'll brush up on those too.
 
