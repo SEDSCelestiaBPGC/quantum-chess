@@ -3,7 +3,6 @@ import os
 from pygame.locals import *
 import math
 from Pieces import *
-from HelperFunctions import *
 
 pygame.init()
 
@@ -140,205 +139,6 @@ selected_pos = [(0,0)]
 p = 0
 
 
-#For moving pieces on the board
-def moves(selected_pos,p):
-    #rooks
-    if selected_pos[p-1] == brook1_rect.center:
-        if valid_move_rook(position_name(selected_pos[p-1]),position_name(selected_pos[p])) == True:
-            brook1_rect.center = selected_pos[p]
-            selected_pos.append((0,0))
-            p+=1
-    if selected_pos[p-1] == brook2_rect.center:
-        if valid_move_rook(position_name(selected_pos[p-1]),position_name(selected_pos[p])) == True:
-            brook2_rect.center = selected_pos[p]
-            selected_pos.append((0,0))
-            p+=1
-    if selected_pos[p-1] == wrook1_rect.center:
-        if valid_move_rook(position_name(selected_pos[p-1]),position_name(selected_pos[p])) == True:
-            wrook1_rect.center = selected_pos[p]
-            selected_pos.append((0,0))
-            p+=1
-    if selected_pos[p-1] == wrook2_rect.center:
-        if valid_move_rook(position_name(selected_pos[p-1]),position_name(selected_pos[p])) == True:
-            wrook2_rect.center = selected_pos[p]
-            selected_pos.append((0,0))
-            p+=1
-
-    #bishops
-    if selected_pos[p-1] == bbishop1_rect.center:
-        if valid_move_bishop(position_name(selected_pos[p-1]),position_name(selected_pos[p])) == True:
-            bbishop1_rect.center = selected_pos[p]
-            selected_pos.append((0,0))
-            p+=1
-
-    if selected_pos[p-1] == bbishop2_rect.center:
-        if valid_move_bishop(position_name(selected_pos[p-1]),position_name(selected_pos[p])) == True:
-            bbishop2_rect.center = selected_pos[p]
-            selected_pos.append((0,0))
-            p+=1
-
-    if selected_pos[p-1] == wbishop1_rect.center:
-        if valid_move_bishop(position_name(selected_pos[p-1]),position_name(selected_pos[p])) == True:
-            wbishop1_rect.center = selected_pos[p]
-            selected_pos.append((0,0))
-            p+=1
-
-    if selected_pos[p-1] == wbishop2_rect.center:
-        if valid_move_bishop(position_name(selected_pos[p-1]),position_name(selected_pos[p])) == True:
-            wbishop2_rect.center = selected_pos[p]
-            selected_pos.append((0,0))
-            p+=1
-
-    #queens
-    if selected_pos[p-1] == bqueen_rect.center:
-        if valid_move_queen(position_name(selected_pos[p-1]),position_name(selected_pos[p])) == True:
-            bqueen_rect.center = selected_pos[p]
-            selected_pos.append((0,0))
-            p+=1
-
-    if selected_pos[p-1] == wqueen_rect.center:
-        if valid_move_queen(position_name(selected_pos[p-1]),position_name(selected_pos[p])) == True:
-            wqueen_rect.center = selected_pos[p]
-            selected_pos.append((0,0))
-            p+=1
-
-    #knights
-    if selected_pos[p-1] == bknight1_rect.center:
-        if valid_move_knight(position_name(selected_pos[p-1]),position_name(selected_pos[p])) == True:
-            bknight1_rect.center = selected_pos[p]
-            selected_pos.append((0,0))
-            p+=1
-
-    if selected_pos[p-1] == bknight2_rect.center:
-        if valid_move_knight(position_name(selected_pos[p-1]),position_name(selected_pos[p])) == True:
-            bknight2_rect.center = selected_pos[p]
-            selected_pos.append((0,0))
-            p+=1
-
-    if selected_pos[p-1] == wknight1_rect.center:
-        if valid_move_knight(position_name(selected_pos[p-1]),position_name(selected_pos[p])) == True:
-            wknight1_rect.center = selected_pos[p]
-            selected_pos.append((0,0))
-            p+=1
-
-    if selected_pos[p-1] == wknight2_rect.center:
-        if valid_move_knight(position_name(selected_pos[p-1]),position_name(selected_pos[p])) == True:
-            wknight2_rect.center = selected_pos[p]
-            selected_pos.append((0,0))
-            p+=1
-
-    #kings
-    if selected_pos[p-1] == bking_rect.center:
-        if valid_move_king(position_name(selected_pos[p-1]),position_name(selected_pos[p])) == True:
-            bking_rect.center = selected_pos[p]
-            selected_pos.append((0,0))
-            p+=1
-
-    if selected_pos[p-1] == wking_rect.center:
-        if valid_move_king(position_name(selected_pos[p-1]),position_name(selected_pos[p])) == True:
-            wking_rect.center = selected_pos[p]
-            selected_pos.append((0,0))
-            p+=1
-
-    #pawns
-    if selected_pos[p-1] == bpawn1_rect.center:
-        if valid_move_bpawn(position_name(selected_pos[p-1]), position_name(selected_pos[p]), selected_pos[p-1], selected_pos[p]) == True:
-            bpawn1_rect.center = selected_pos[p]
-            selected_pos.append((0,0))
-            p+=1
-
-    if selected_pos[p-1] == bpawn2_rect.center:
-        if valid_move_bpawn(position_name(selected_pos[p-1]), position_name(selected_pos[p]), selected_pos[p-1], selected_pos[p]) == True:
-            bpawn2_rect.center = selected_pos[p]
-            selected_pos.append((0,0))
-            p+=1
-
-    if selected_pos[p-1] == bpawn3_rect.center:
-        if valid_move_bpawn(position_name(selected_pos[p-1]), position_name(selected_pos[p]), selected_pos[p-1], selected_pos[p]) == True:
-            bpawn3_rect.center = selected_pos[p]
-            selected_pos.append((0,0))
-            p+=1
-
-    if selected_pos[p-1] == bpawn4_rect.center:
-        if valid_move_bpawn(position_name(selected_pos[p-1]), position_name(selected_pos[p]), selected_pos[p-1], selected_pos[p]) == True:
-            bpawn4_rect.center = selected_pos[p]
-            selected_pos.append((0,0))
-            p+=1
-
-    if selected_pos[p-1] == bpawn5_rect.center:
-        if valid_move_bpawn(position_name(selected_pos[p-1]), position_name(selected_pos[p]), selected_pos[p-1], selected_pos[p]) == True:
-            bpawn5_rect.center = selected_pos[p]
-            selected_pos.append((0,0))
-            p+=1
-
-    if selected_pos[p-1] == bpawn6_rect.center:
-        if valid_move_bpawn(position_name(selected_pos[p-1]), position_name(selected_pos[p]), selected_pos[p-1], selected_pos[p]) == True:
-            bpawn6_rect.center = selected_pos[p]
-            selected_pos.append((0,0))
-            p+=1
-
-    if selected_pos[p-1] == bpawn7_rect.center:
-        if valid_move_bpawn(position_name(selected_pos[p-1]), position_name(selected_pos[p]), selected_pos[p-1], selected_pos[p]) == True:
-            bpawn7_rect.center = selected_pos[p]
-            selected_pos.append((0,0))
-            p+=1
-
-    if selected_pos[p-1] == bpawn8_rect.center:
-        if valid_move_bpawn(position_name(selected_pos[p-1]), position_name(selected_pos[p]), selected_pos[p-1], selected_pos[p]) == True:
-            bpawn8_rect.center = selected_pos[p]
-            selected_pos.append((0,0))
-            p+=1
-
-    if selected_pos[p-1] == wpawn1_rect.center:
-        if valid_move_wpawn(position_name(selected_pos[p-1]), position_name(selected_pos[p]), selected_pos[p-1], selected_pos[p]) == True:
-            wpawn1_rect.center = selected_pos[p]
-            selected_pos.append((0,0))
-            p+=1
-
-    if selected_pos[p-1] == wpawn2_rect.center:
-        if valid_move_wpawn(position_name(selected_pos[p-1]), position_name(selected_pos[p]), selected_pos[p-1], selected_pos[p]) == True:
-            wpawn2_rect.center = selected_pos[p]
-            selected_pos.append((0,0))
-            p+=1
-
-    if selected_pos[p-1] == wpawn3_rect.center:
-        if valid_move_wpawn(position_name(selected_pos[p-1]), position_name(selected_pos[p]), selected_pos[p-1], selected_pos[p]) == True:
-            wpawn3_rect.center = selected_pos[p]
-            selected_pos.append((0,0))
-            p+=1
-
-    if selected_pos[p-1] == wpawn4_rect.center:
-        if valid_move_wpawn(position_name(selected_pos[p-1]), position_name(selected_pos[p]), selected_pos[p-1], selected_pos[p]) == True:
-            wpawn4_rect.center = selected_pos[p]
-            selected_pos.append((0,0))
-            p+=1
-
-    if selected_pos[p-1] == wpawn5_rect.center:
-        if valid_move_wpawn(position_name(selected_pos[p-1]), position_name(selected_pos[p]), selected_pos[p-1], selected_pos[p]) == True:
-            wpawn5_rect.center = selected_pos[p]
-            selected_pos.append((0,0))
-            p+=1
-
-    if selected_pos[p-1] == wpawn6_rect.center:
-        if valid_move_wpawn(position_name(selected_pos[p-1]), position_name(selected_pos[p]), selected_pos[p-1], selected_pos[p]) == True:
-            wpawn6_rect.center = selected_pos[p]
-            selected_pos.append((0,0))
-            p+=1
-
-    if selected_pos[p-1] == wpawn7_rect.center:
-        if valid_move_wpawn(position_name(selected_pos[p-1]), position_name(selected_pos[p]), selected_pos[p-1], selected_pos[p]) == True:
-            wpawn7_rect.center = selected_pos[p]
-            selected_pos.append((0,0))
-            p+=1
-
-    if selected_pos[p-1] == wpawn8_rect.center:
-        if valid_move_wpawn(position_name(selected_pos[p-1]), position_name(selected_pos[p]), selected_pos[p-1], selected_pos[p]) == True:
-            wpawn8_rect.center = selected_pos[p]
-            selected_pos.append((0,0))
-            p+=1
-
-
-
 running  = True
 
 while running:
@@ -360,8 +160,200 @@ while running:
         elif event.type == MOUSEBUTTONUP:
             selected_pos.append(nearest_center(pygame.mouse.get_pos()))
             p+=1
-            moves(selected_pos,p)
+            #rooks
+            if selected_pos[p-1] == brook1_rect.center:
+                if valid_move_rook(position_name(selected_pos[p-1]),position_name(selected_pos[p])) == True:
+                    brook1_rect.center = selected_pos[p]
+                    selected_pos.append((0,0))
+                    p+=1
+            if selected_pos[p-1] == brook2_rect.center:
+                if valid_move_rook(position_name(selected_pos[p-1]),position_name(selected_pos[p])) == True:
+                    brook2_rect.center = selected_pos[p]
+                    selected_pos.append((0,0))
+                    p+=1
+            if selected_pos[p-1] == wrook1_rect.center:
+                if valid_move_rook(position_name(selected_pos[p-1]),position_name(selected_pos[p])) == True:
+                    wrook1_rect.center = selected_pos[p]
+                    selected_pos.append((0,0))
+                    p+=1
+            if selected_pos[p-1] == wrook2_rect.center:
+                if valid_move_rook(position_name(selected_pos[p-1]),position_name(selected_pos[p])) == True:
+                    wrook2_rect.center = selected_pos[p]
+                    selected_pos.append((0,0))
+                    p+=1
 
+            #bishops
+            if selected_pos[p-1] == bbishop1_rect.center:
+                if valid_move_bishop(position_name(selected_pos[p-1]),position_name(selected_pos[p])) == True:
+                    bbishop1_rect.center = selected_pos[p]
+                    selected_pos.append((0,0))
+                    p+=1
+
+            if selected_pos[p-1] == bbishop2_rect.center:
+                if valid_move_bishop(position_name(selected_pos[p-1]),position_name(selected_pos[p])) == True:
+                    bbishop2_rect.center = selected_pos[p]
+                    selected_pos.append((0,0))
+                    p+=1
+
+            if selected_pos[p-1] == wbishop1_rect.center:
+                if valid_move_bishop(position_name(selected_pos[p-1]),position_name(selected_pos[p])) == True:
+                    wbishop1_rect.center = selected_pos[p]
+                    selected_pos.append((0,0))
+                    p+=1
+
+            if selected_pos[p-1] == wbishop2_rect.center:
+                if valid_move_bishop(position_name(selected_pos[p-1]),position_name(selected_pos[p])) == True:
+                    wbishop2_rect.center = selected_pos[p]
+                    selected_pos.append((0,0))
+                    p+=1
+
+            #queens
+            if selected_pos[p-1] == bqueen_rect.center:
+                if valid_move_queen(position_name(selected_pos[p-1]),position_name(selected_pos[p])) == True:
+                    bqueen_rect.center = selected_pos[p]
+                    selected_pos.append((0,0))
+                    p+=1
+
+            if selected_pos[p-1] == wqueen_rect.center:
+                if valid_move_queen(position_name(selected_pos[p-1]),position_name(selected_pos[p])) == True:
+                    wqueen_rect.center = selected_pos[p]
+                    selected_pos.append((0,0))
+                    p+=1
+
+            #knights
+            if selected_pos[p-1] == bknight1_rect.center:
+                if valid_move_knight(position_name(selected_pos[p-1]),position_name(selected_pos[p])) == True:
+                    bknight1_rect.center = selected_pos[p]
+                    selected_pos.append((0,0))
+                    p+=1
+
+            if selected_pos[p-1] == bknight2_rect.center:
+                if valid_move_knight(position_name(selected_pos[p-1]),position_name(selected_pos[p])) == True:
+                    bknight2_rect.center = selected_pos[p]
+                    selected_pos.append((0,0))
+                    p+=1
+
+            if selected_pos[p-1] == wknight1_rect.center:
+                if valid_move_knight(position_name(selected_pos[p-1]),position_name(selected_pos[p])) == True:
+                    wknight1_rect.center = selected_pos[p]
+                    selected_pos.append((0,0))
+                    p+=1
+
+            if selected_pos[p-1] == wknight2_rect.center:
+                if valid_move_knight(position_name(selected_pos[p-1]),position_name(selected_pos[p])) == True:
+                    wknight2_rect.center = selected_pos[p]
+                    selected_pos.append((0,0))
+                    p+=1
+
+            #kings
+            if selected_pos[p-1] == bking_rect.center:
+                if valid_move_king(position_name(selected_pos[p-1]),position_name(selected_pos[p])) == True:
+                    bking_rect.center = selected_pos[p]
+                    selected_pos.append((0,0))
+                    p+=1
+
+            if selected_pos[p-1] == wking_rect.center:
+                if valid_move_king(position_name(selected_pos[p-1]),position_name(selected_pos[p])) == True:
+                    wking_rect.center = selected_pos[p]
+                    selected_pos.append((0,0))
+                    p+=1
+
+            #pawns
+            if selected_pos[p-1] == bpawn1_rect.center:
+                if valid_move_bpawn(position_name(selected_pos[p-1]), position_name(selected_pos[p]), selected_pos[p-1], selected_pos[p]) == True:
+                    bpawn1_rect.center = selected_pos[p]
+                    selected_pos.append((0,0))
+                    p+=1
+
+            if selected_pos[p-1] == bpawn2_rect.center:
+                if valid_move_bpawn(position_name(selected_pos[p-1]), position_name(selected_pos[p]), selected_pos[p-1], selected_pos[p]) == True:
+                    bpawn2_rect.center = selected_pos[p]
+                    selected_pos.append((0,0))
+                    p+=1
+
+            if selected_pos[p-1] == bpawn3_rect.center:
+                if valid_move_bpawn(position_name(selected_pos[p-1]), position_name(selected_pos[p]), selected_pos[p-1], selected_pos[p]) == True:
+                    bpawn3_rect.center = selected_pos[p]
+                    selected_pos.append((0,0))
+                    p+=1
+
+            if selected_pos[p-1] == bpawn4_rect.center:
+                if valid_move_bpawn(position_name(selected_pos[p-1]), position_name(selected_pos[p]), selected_pos[p-1], selected_pos[p]) == True:
+                    bpawn4_rect.center = selected_pos[p]
+                    selected_pos.append((0,0))
+                    p+=1
+
+            if selected_pos[p-1] == bpawn5_rect.center:
+                if valid_move_bpawn(position_name(selected_pos[p-1]), position_name(selected_pos[p]), selected_pos[p-1], selected_pos[p]) == True:
+                    bpawn5_rect.center = selected_pos[p]
+                    selected_pos.append((0,0))
+                    p+=1
+
+            if selected_pos[p-1] == bpawn6_rect.center:
+                if valid_move_bpawn(position_name(selected_pos[p-1]), position_name(selected_pos[p]), selected_pos[p-1], selected_pos[p]) == True:
+                    bpawn6_rect.center = selected_pos[p]
+                    selected_pos.append((0,0))
+                    p+=1
+
+            if selected_pos[p-1] == bpawn7_rect.center:
+                if valid_move_bpawn(position_name(selected_pos[p-1]), position_name(selected_pos[p]), selected_pos[p-1], selected_pos[p]) == True:
+                    bpawn7_rect.center = selected_pos[p]
+                    selected_pos.append((0,0))
+                    p+=1
+
+            if selected_pos[p-1] == bpawn8_rect.center:
+                if valid_move_bpawn(position_name(selected_pos[p-1]), position_name(selected_pos[p]), selected_pos[p-1], selected_pos[p]) == True:
+                    bpawn8_rect.center = selected_pos[p]
+                    selected_pos.append((0,0))
+                    p+=1
+
+            if selected_pos[p-1] == wpawn1_rect.center:
+                if valid_move_wpawn(position_name(selected_pos[p-1]), position_name(selected_pos[p]), selected_pos[p-1], selected_pos[p]) == True:
+                    wpawn1_rect.center = selected_pos[p]
+                    selected_pos.append((0,0))
+                    p+=1
+
+            if selected_pos[p-1] == wpawn2_rect.center:
+                if valid_move_wpawn(position_name(selected_pos[p-1]), position_name(selected_pos[p]), selected_pos[p-1], selected_pos[p]) == True:
+                    wpawn2_rect.center = selected_pos[p]
+                    selected_pos.append((0,0))
+                    p+=1
+
+            if selected_pos[p-1] == wpawn3_rect.center:
+                if valid_move_wpawn(position_name(selected_pos[p-1]), position_name(selected_pos[p]), selected_pos[p-1], selected_pos[p]) == True:
+                    wpawn3_rect.center = selected_pos[p]
+                    selected_pos.append((0,0))
+                    p+=1
+
+            if selected_pos[p-1] == wpawn4_rect.center:
+                if valid_move_wpawn(position_name(selected_pos[p-1]), position_name(selected_pos[p]), selected_pos[p-1], selected_pos[p]) == True:
+                    wpawn4_rect.center = selected_pos[p]
+                    selected_pos.append((0,0))
+                    p+=1
+
+            if selected_pos[p-1] == wpawn5_rect.center:
+                if valid_move_wpawn(position_name(selected_pos[p-1]), position_name(selected_pos[p]), selected_pos[p-1], selected_pos[p]) == True:
+                    wpawn5_rect.center = selected_pos[p]
+                    selected_pos.append((0,0))
+                    p+=1
+
+            if selected_pos[p-1] == wpawn6_rect.center:
+                if valid_move_wpawn(position_name(selected_pos[p-1]), position_name(selected_pos[p]), selected_pos[p-1], selected_pos[p]) == True:
+                    wpawn6_rect.center = selected_pos[p]
+                    selected_pos.append((0,0))
+                    p+=1
+
+            if selected_pos[p-1] == wpawn7_rect.center:
+                if valid_move_wpawn(position_name(selected_pos[p-1]), position_name(selected_pos[p]), selected_pos[p-1], selected_pos[p]) == True:
+                    wpawn7_rect.center = selected_pos[p]
+                    selected_pos.append((0,0))
+                    p+=1
+
+            if selected_pos[p-1] == wpawn8_rect.center:
+                if valid_move_wpawn(position_name(selected_pos[p-1]), position_name(selected_pos[p]), selected_pos[p-1], selected_pos[p]) == True:
+                    wpawn8_rect.center = selected_pos[p]
+                    selected_pos.append((0,0))
+                    p+=1
 
 
         pieces()
