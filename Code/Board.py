@@ -53,13 +53,6 @@ def position_name(pos):
     return pos_name
 
 #nearest center to the mouseclick
-def square(x):
-    return x * x
-
-def distance_formula(pos1, pos2):
-    # pos1 and pos2 are tuples of 2 numbers
-    return math.sqrt(square(pos2[0] - pos1[0]) + square(pos2[1] - pos1[1]))
-
 def nearest_center (pos_mouse):
     dist = temp = 5000000
     for i in range(0,64):
@@ -362,4 +355,3 @@ while running:
 
 
 pygame.quit()
-
