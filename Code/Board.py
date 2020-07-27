@@ -1,9 +1,15 @@
 import pygame
 import os
+from pygame.locals import *
 import math
 from Pieces import *
 
 pygame.init()
+
+pygame.display.set_caption("Quantum Chess")
+#icon = pygame.image.load("/home/lenovo/Desktop/Q-Computing/QOSI/quantum-chess/Media/Icon.png")
+#pygame.display.set_icon(icon)
+
 
 light_square=(255,255,204)
 dark_square=(139,69,19)
@@ -65,6 +71,7 @@ def nearest_center (pos_mouse):
     return new_pos
 
 
+
 #Make Board
 board_width=480
 margin=30
@@ -110,6 +117,22 @@ def pieces():
     board.blit(wknight2,wknight2_rect)
     board.blit(bking,bking_rect)
     board.blit(wking,wking_rect)
+    board.blit(bpawn1, bpawn1_rect)
+    board.blit(bpawn2, bpawn2_rect)
+    board.blit(bpawn3, bpawn3_rect)
+    board.blit(bpawn4, bpawn4_rect)
+    board.blit(bpawn5, bpawn5_rect)
+    board.blit(bpawn6, bpawn6_rect)
+    board.blit(bpawn7, bpawn7_rect)
+    board.blit(bpawn8, bpawn8_rect)
+    board.blit(wpawn1, wpawn1_rect)
+    board.blit(wpawn2, wpawn2_rect)
+    board.blit(wpawn3, wpawn3_rect)
+    board.blit(wpawn4, wpawn4_rect)
+    board.blit(wpawn5, wpawn5_rect)
+    board.blit(wpawn6, wpawn6_rect)
+    board.blit(wpawn7, wpawn7_rect)
+    board.blit(wpawn8, wpawn8_rect)
 
 
 selected_pos = [(0,0)]
@@ -131,13 +154,12 @@ while running:
             if event.key == pygame.K_ESCAPE:
                 running = False
 
-        elif event.type == pygame.MOUSEBUTTONDOWN:
+        elif event.type == MOUSEBUTTONDOWN:
             pass
 
-        elif event.type == pygame.MOUSEBUTTONUP:
+        elif event.type == MOUSEBUTTONUP:
             selected_pos.append(nearest_center(pygame.mouse.get_pos()))
             p+=1
-
             #rooks
             if selected_pos[p-1] == brook1_rect.center:
                 if valid_move_rook(position_name(selected_pos[p-1]),position_name(selected_pos[p])) == True:
@@ -236,8 +258,107 @@ while running:
                     selected_pos.append((0,0))
                     p+=1
 
+            #pawns
+            if selected_pos[p-1] == bpawn1_rect.center:
+                if valid_move_bpawn(position_name(selected_pos[p-1]), position_name(selected_pos[p]), selected_pos[p-1], selected_pos[p]) == True:
+                    bpawn1_rect.center = selected_pos[p]
+                    selected_pos.append((0,0))
+                    p+=1
+
+            if selected_pos[p-1] == bpawn2_rect.center:
+                if valid_move_bpawn(position_name(selected_pos[p-1]), position_name(selected_pos[p]), selected_pos[p-1], selected_pos[p]) == True:
+                    bpawn2_rect.center = selected_pos[p]
+                    selected_pos.append((0,0))
+                    p+=1
+
+            if selected_pos[p-1] == bpawn3_rect.center:
+                if valid_move_bpawn(position_name(selected_pos[p-1]), position_name(selected_pos[p]), selected_pos[p-1], selected_pos[p]) == True:
+                    bpawn3_rect.center = selected_pos[p]
+                    selected_pos.append((0,0))
+                    p+=1
+
+            if selected_pos[p-1] == bpawn4_rect.center:
+                if valid_move_bpawn(position_name(selected_pos[p-1]), position_name(selected_pos[p]), selected_pos[p-1], selected_pos[p]) == True:
+                    bpawn4_rect.center = selected_pos[p]
+                    selected_pos.append((0,0))
+                    p+=1
+
+            if selected_pos[p-1] == bpawn5_rect.center:
+                if valid_move_bpawn(position_name(selected_pos[p-1]), position_name(selected_pos[p]), selected_pos[p-1], selected_pos[p]) == True:
+                    bpawn5_rect.center = selected_pos[p]
+                    selected_pos.append((0,0))
+                    p+=1
+
+            if selected_pos[p-1] == bpawn6_rect.center:
+                if valid_move_bpawn(position_name(selected_pos[p-1]), position_name(selected_pos[p]), selected_pos[p-1], selected_pos[p]) == True:
+                    bpawn6_rect.center = selected_pos[p]
+                    selected_pos.append((0,0))
+                    p+=1
+
+            if selected_pos[p-1] == bpawn7_rect.center:
+                if valid_move_bpawn(position_name(selected_pos[p-1]), position_name(selected_pos[p]), selected_pos[p-1], selected_pos[p]) == True:
+                    bpawn7_rect.center = selected_pos[p]
+                    selected_pos.append((0,0))
+                    p+=1
+
+            if selected_pos[p-1] == bpawn8_rect.center:
+                if valid_move_bpawn(position_name(selected_pos[p-1]), position_name(selected_pos[p]), selected_pos[p-1], selected_pos[p]) == True:
+                    bpawn8_rect.center = selected_pos[p]
+                    selected_pos.append((0,0))
+                    p+=1
+
+            if selected_pos[p-1] == wpawn1_rect.center:
+                if valid_move_wpawn(position_name(selected_pos[p-1]), position_name(selected_pos[p]), selected_pos[p-1], selected_pos[p]) == True:
+                    wpawn1_rect.center = selected_pos[p]
+                    selected_pos.append((0,0))
+                    p+=1
+
+            if selected_pos[p-1] == wpawn2_rect.center:
+                if valid_move_wpawn(position_name(selected_pos[p-1]), position_name(selected_pos[p]), selected_pos[p-1], selected_pos[p]) == True:
+                    wpawn2_rect.center = selected_pos[p]
+                    selected_pos.append((0,0))
+                    p+=1
+
+            if selected_pos[p-1] == wpawn3_rect.center:
+                if valid_move_wpawn(position_name(selected_pos[p-1]), position_name(selected_pos[p]), selected_pos[p-1], selected_pos[p]) == True:
+                    wpawn3_rect.center = selected_pos[p]
+                    selected_pos.append((0,0))
+                    p+=1
+
+            if selected_pos[p-1] == wpawn4_rect.center:
+                if valid_move_wpawn(position_name(selected_pos[p-1]), position_name(selected_pos[p]), selected_pos[p-1], selected_pos[p]) == True:
+                    wpawn4_rect.center = selected_pos[p]
+                    selected_pos.append((0,0))
+                    p+=1
+
+            if selected_pos[p-1] == wpawn5_rect.center:
+                if valid_move_wpawn(position_name(selected_pos[p-1]), position_name(selected_pos[p]), selected_pos[p-1], selected_pos[p]) == True:
+                    wpawn5_rect.center = selected_pos[p]
+                    selected_pos.append((0,0))
+                    p+=1
+
+            if selected_pos[p-1] == wpawn6_rect.center:
+                if valid_move_wpawn(position_name(selected_pos[p-1]), position_name(selected_pos[p]), selected_pos[p-1], selected_pos[p]) == True:
+                    wpawn6_rect.center = selected_pos[p]
+                    selected_pos.append((0,0))
+                    p+=1
+
+            if selected_pos[p-1] == wpawn7_rect.center:
+                if valid_move_wpawn(position_name(selected_pos[p-1]), position_name(selected_pos[p]), selected_pos[p-1], selected_pos[p]) == True:
+                    wpawn7_rect.center = selected_pos[p]
+                    selected_pos.append((0,0))
+                    p+=1
+
+            if selected_pos[p-1] == wpawn8_rect.center:
+                if valid_move_wpawn(position_name(selected_pos[p-1]), position_name(selected_pos[p]), selected_pos[p-1], selected_pos[p]) == True:
+                    wpawn8_rect.center = selected_pos[p]
+                    selected_pos.append((0,0))
+                    p+=1
+
+
         pieces()
         pygame.display.update()
 
 
 
+pygame.quit()
