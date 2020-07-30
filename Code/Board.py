@@ -3,64 +3,19 @@ import os
 from pygame.locals import *
 import math
 from Pieces import *
+from pygame.constants import (
+    MOUSEBUTTONDOWN, MOUSEBUTTONUP
+)
 
 pygame.init()
 
-pygame.display.set_caption("Quantum Chess")
-icon = pygame.image.load(os.path.join(media_path,"Icon.png"))
-pygame.display.set_icon(icon)
+light_square = (255, 255, 255)
+dark_square = (139, 69, 19)
+white = (255, 255, 255)
+black = (0, 0, 0)
+grey = (169, 169, 169)
+transparent = (0, 0, 0, 0)
 
-light_square=(255,255,204)
-dark_square=(139,69,19)
-white=(255,255,255)
-black=(0,0,0)
-grey=(169,169,169)
-
-#list of centers
-centers = []
-
-x_center = 30
-y_center = 30
-
-while x_center != 510:
-    while y_center != 510:
-        centers.append((x_center, y_center))
-        y_center += 60
-    x_center += 60
-    y_center = 30
-
-#list of positons of squares
-
-position_names =['a8']
-
-first_char = position_names[0][slice(1)]
-second_char = position_names[0][slice(1,2)]
-
-while ord(first_char) != 105:
-    while ord(second_char) != 49:
-        second_char = chr(ord(second_char)-1)
-        position_names.append(str(first_char + second_char))
-    first_char = chr(ord(first_char) + 1)
-    second_char = '9'
-
-#function to identify name of position on which the piece exists
-def position_name(pos):
-    for i in range (0,64):
-        if pos == centers[i]:
-            pos_name = position_names[i]
-
-    return pos_name
-
-#nearest center to the mouseclick
-def nearest_center (pos_mouse):
-    dist = temp = 5000000
-    for i in range(0,64):
-        dist = distance_formula(pos_mouse,centers[i])
-        if dist < temp:
-            new_pos = centers[i]
-            temp = dist
-
-    return new_pos
 
 #Make Board
 board_width=480
@@ -137,6 +92,8 @@ def update_pos(im, im_rect, final_pos):
 
 selected_pos = [(0,0)]
 p = 0
+
+turnvar = True
 running  = True
 while running:
     for event in pygame.event.get():
@@ -147,212 +104,368 @@ while running:
 
         if event.type == pygame.QUIT:
             running = False
+
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_ESCAPE:
                 running = False
 
-        elif event.type == pygame.MOUSEBUTTONDOWN:
+        elif event.type == MOUSEBUTTONDOWN:
             pass
 
-        elif event.type == pygame.MOUSEBUTTONUP:
+        elif event.type == MOUSEBUTTONUP:
+            turnvar = turn(selected_pos,p)
             selected_pos.append(nearest_center(pygame.mouse.get_pos()))
-            p+=1
-            move_made=0
-            #rooks
-            if selected_pos[p-1] == brook1_rect.center:
-                if valid_move_rook(position_name(selected_pos[p-1]),position_name(selected_pos[p])) == True:
-                    update_pos(brook1, brook1_rect, selected_pos[p])
-                    selected_pos.append((0,0))
-                    p+=1
-            if selected_pos[p-1] == brook2_rect.center:
-                if valid_move_rook(position_name(selected_pos[p-1]),position_name(selected_pos[p])) == True:
-                    update_pos(brook2, brook2_rect, selected_pos[p])
-                    selected_pos.append((0,0))
-                    p+=1  
-            if selected_pos[p-1] == wrook1_rect.center:
-                if valid_move_rook(position_name(selected_pos[p-1]),position_name(selected_pos[p])) == True:
-                    update_pos(wrook1, wrook1_rect, selected_pos[p])
-                    selected_pos.append((0,0))
-                    p+=1
-            if selected_pos[p-1] == wrook2_rect.center:
-                if valid_move_rook(position_name(selected_pos[p-1]),position_name(selected_pos[p])) == True:
-                    update_pos(wrook2, wrook2_rect, selected_pos[p])
-                    selected_pos.append((0,0))
-                    p+=1
+            p += 1
 
-            #bishops
-            if selected_pos[p-1] == bbishop1_rect.center:
-                if valid_move_bishop(position_name(selected_pos[p-1]),position_name(selected_pos[p])) == True:
-                    update_pos(bbishop1, bbishop1_rect, selected_pos[p])
-                    selected_pos.append((0,0))
-                    p+=1
+            # rooks
+            if selected_pos[p - 1] == brook1_rect.center:
+                if 'brook1' in capturedpieces:
+                    selected_pos.append((0, 0))
+                    p += 1
+                elif turnvar == True:
+                    if valid_move_rook(position_name(selected_pos[p - 1]), position_name(selected_pos[p]),selected_pos,p) == True:
+                        update_pos(brook1, brook1_rect, selected_pos[p])
+                        selected_pos.append((0, 0))
+                        p += 1
 
-            if selected_pos[p-1] == bbishop2_rect.center:
-                if valid_move_bishop(position_name(selected_pos[p-1]),position_name(selected_pos[p])) == True:
-                    update_pos(bbishop2, bbishop2_rect, selected_pos[p])
-                    selected_pos.append((0,0))
-                    p+=1
+            if selected_pos[p - 1] == brook2_rect.center:
+                if 'brook2' in capturedpieces:
+                    selected_pos.append((0, 0))
+                    p += 1
+                elif turnvar == True:
+                    if valid_move_rook(position_name(selected_pos[p - 1]), position_name(selected_pos[p]),selected_pos,p) == True:
+                        update_pos(brook2, brook2_rect, selected_pos[p])
+                        selected_pos.append((0, 0))
+                        p += 1
 
-            if selected_pos[p-1] == wbishop1_rect.center:
-                if valid_move_bishop(position_name(selected_pos[p-1]),position_name(selected_pos[p])) == True:
-                    update_pos(wbishop1, wbishop1_rect, selected_pos[p])
-                    selected_pos.append((0,0))
-                    p+=1
+            if selected_pos[p - 1] == wrook1_rect.center:
+                if 'wrook1' in capturedpieces:
+                    selected_pos.append((0, 0))
+                    p += 1
+                elif turnvar == True:
+                    if valid_move_rook(position_name(selected_pos[p - 1]), position_name(selected_pos[p]),selected_pos,p) == True:
+                        update_pos(wrook1, wrook1_rect, selected_pos[p])
+                        selected_pos.append((0, 0))
+                        p += 1
 
-            if selected_pos[p-1] == wbishop2_rect.center:
-                if valid_move_bishop(position_name(selected_pos[p-1]),position_name(selected_pos[p])) == True:
-                    update_pos(wbishop2, wbishop2_rect, selected_pos[p])
-                    selected_pos.append((0,0))
-                    p+=1
+            if selected_pos[p - 1] == wrook2_rect.center:
+                if 'wrook2' in capturedpieces:
+                    selected_pos.append((0, 0))
+                    p += 1
+                elif turnvar == True:
+                    if valid_move_rook(position_name(selected_pos[p - 1]), position_name(selected_pos[p]),selected_pos,p) == True:
+                        update_pos(wrook2, wrook2_rect, selected_pos[p])
+                        selected_pos.append((0, 0))
+                        p += 1
 
-            #queens
-            if selected_pos[p-1] == bqueen_rect.center:
-                if valid_move_queen(position_name(selected_pos[p-1]),position_name(selected_pos[p])) == True:
-                    update_pos(bqueen, bqueen_rect, selected_pos[p])
-                    selected_pos.append((0,0))
-                    p+=1
+            # bishops
+            if selected_pos[p - 1] == bbishop1_rect.center:
+                if 'bbishop1' in capturedpieces:
+                    selected_pos.append((0, 0))
+                    p += 1
+                elif turnvar == True:
+                    if valid_move_bishop(position_name(selected_pos[p - 1]), position_name(selected_pos[p]),
+                                         selected_pos[p-1],selected_pos[p],selected_pos,p) == True:
+                        update_pos(bbishop1, bbishop1_rect, selected_pos[p])
+                        selected_pos.append((0, 0))
+                        p += 1
 
-            if selected_pos[p-1] == wqueen_rect.center:
-                if valid_move_queen(position_name(selected_pos[p-1]),position_name(selected_pos[p])) == True:
-                    update_pos(wqueen, wqueen_rect, selected_pos[p])
-                    selected_pos.append((0,0))
-                    p+=1
+            if selected_pos[p - 1] == bbishop2_rect.center:
+                if 'bbishop2' in capturedpieces:
+                    selected_pos.append((0, 0))
+                    p += 1
+                elif turnvar == True:
+                    if valid_move_bishop(position_name(selected_pos[p - 1]), position_name(selected_pos[p]),
+                                         selected_pos[p-1],selected_pos[p],selected_pos,p) == True:
+                        update_pos(bbishop2, bbishop2_rect, selected_pos[p])
+                        selected_pos.append((0, 0))
+                        p += 1
 
-            #knights
-            if selected_pos[p-1] == bknight1_rect.center:
-                if valid_move_knight(position_name(selected_pos[p-1]),position_name(selected_pos[p])) == True:
-                    update_pos(bknight1, bknight1_rect, selected_pos[p])
-                    selected_pos.append((0,0))
-                    p+=1
+            if selected_pos[p - 1] == wbishop1_rect.center:
+                if 'wbishop1' in capturedpieces:
+                    selected_pos.append((0, 0))
+                    p += 1
+                elif turnvar == True:
+                    if valid_move_bishop(position_name(selected_pos[p - 1]), position_name(selected_pos[p]),
+                                         selected_pos[p - 1], selected_pos[p],selected_pos,p) == True:
+                        update_pos(wbishop1, wbishop1_rect, selected_pos[p])
+                        selected_pos.append((0, 0))
+                        p += 1
 
-            if selected_pos[p-1] == bknight2_rect.center:
-                if valid_move_knight(position_name(selected_pos[p-1]),position_name(selected_pos[p])) == True:
-                    update_pos(bknight2, bknight2_rect, selected_pos[p])
-                    selected_pos.append((0,0))
-                    p+=1
+            if selected_pos[p - 1] == wbishop2_rect.center:
+                if 'wbishop2' in capturedpieces:
+                    selected_pos.append((0, 0))
+                    p += 1
+                elif turnvar == True:
+                    if valid_move_bishop(position_name(selected_pos[p - 1]), position_name(selected_pos[p]),
+                                         selected_pos[p - 1], selected_pos[p],selected_pos,p) == True:
+                        update_pos(wbishop2, wbishop2_rect, selected_pos[p])
+                        selected_pos.append((0, 0))
+                        p += 1
 
-            if selected_pos[p-1] == wknight1_rect.center:
-                if valid_move_knight(position_name(selected_pos[p-1]),position_name(selected_pos[p])) == True:
-                    update_pos(wknight1, wknight1_rect, selected_pos[p])
-                    selected_pos.append((0,0))
-                    p+=1
+            # queens
+            if selected_pos[p - 1] == bqueen_rect.center:
+                if 'bqueen' in capturedpieces:
+                    selected_pos.append((0, 0))
+                    p += 1
+                elif turnvar == True:
+                    if valid_move_queen(position_name(selected_pos[p - 1]), position_name(selected_pos[p]),
+                                        selected_pos[p - 1], selected_pos[p],selected_pos,p) == True:
+                        update_pos(bqueen, bqueen_rect, selected_pos[p])
+                        selected_pos.append((0, 0))
+                        p += 1
 
-            if selected_pos[p-1] == wknight2_rect.center:
-                if valid_move_knight(position_name(selected_pos[p-1]),position_name(selected_pos[p])) == True:
-                    update_pos(wknight2, wknight2_rect, selected_pos[p])
-                    selected_pos.append((0,0))
-                    p+=1
+            if selected_pos[p - 1] == wqueen_rect.center:
+                if 'wqueen' in capturedpieces:
+                    selected_pos.append((0, 0))
+                    p += 1
+                elif turnvar == True:
+                    if valid_move_queen(position_name(selected_pos[p - 1]), position_name(selected_pos[p]),
+                                        selected_pos[p - 1], selected_pos[p],selected_pos,p) == True:
+                        update_pos(wqueen, wqueen_rect, selected_pos[p])
+                        selected_pos.append((0, 0))
+                        p += 1
 
-            #kings
-            if selected_pos[p-1] == bking_rect.center:
-                if valid_move_king(position_name(selected_pos[p-1]),position_name(selected_pos[p])) == True:
-                    update_pos(bking, bking_rect, selected_pos[p])
-                    selected_pos.append((0,0))
-                    p+=1
+            # knights
+            if selected_pos[p - 1] == bknight1_rect.center:
+                if 'bknight1' in capturedpieces:
+                    selected_pos.append((0, 0))
+                    p += 1
+                elif turnvar == True:
+                    if valid_move_knight(selected_pos[p - 1], selected_pos[p],selected_pos,p) == True:
+                        update_pos(bknight1, bknight1_rect, selected_pos[p])
+                        selected_pos.append((0, 0))
+                        p += 1
 
-            if selected_pos[p-1] == wking_rect.center:
-                if valid_move_king(position_name(selected_pos[p-1]),position_name(selected_pos[p])) == True:
-                    update_pos(wking, wking_rect, selected_pos[p])
-                    selected_pos.append((0,0))
-                    p+=1
+            if selected_pos[p - 1] == bknight2_rect.center:
+                if 'bknight2' in capturedpieces:
+                    selected_pos.append((0, 0))
+                    p += 1
+                elif turnvar == True:
+                    if valid_move_knight(selected_pos[p-1],selected_pos[p],selected_pos,p) == True:
+                        update_pos(bknight2, bknight2_rect, selected_pos[p])
+                        selected_pos.append((0, 0))
+                        p += 1
 
-            #pawns
-            if selected_pos[p-1] == bpawn1_rect.center:
-                if valid_move_bpawn(position_name(selected_pos[p-1]), position_name(selected_pos[p]), selected_pos[p-1], selected_pos[p]) == True:
-                    update_pos(bpawn1, bpawn1_rect, selected_pos[p])
-                    selected_pos.append((0,0))
-                    p+=1
+            if selected_pos[p - 1] == wknight1_rect.center:
+                if 'wknight1' in capturedpieces:
+                    selected_pos.append((0, 0))
+                    p += 1
+                elif turnvar == True:
+                    if valid_move_knight(selected_pos[p-1],selected_pos[p],selected_pos,p) == True:
+                        update_pos(wknight1, wknight1_rect, selected_pos[p])
+                        selected_pos.append((0, 0))
+                        p += 1
 
-            if selected_pos[p-1] == bpawn2_rect.center:
-                if valid_move_bpawn(position_name(selected_pos[p-1]), position_name(selected_pos[p]), selected_pos[p-1], selected_pos[p]) == True:
-                    update_pos(bpawn2, bpawn2_rect, selected_pos[p])
-                    selected_pos.append((0,0))
-                    p+=1
+            if selected_pos[p - 1] == wknight2_rect.center:
+                if 'wknight2' in capturedpieces:
+                    selected_pos.append((0, 0))
+                    p += 1
+                elif turnvar == True:
+                    if valid_move_knight(selected_pos[p-1],selected_pos[p],selected_pos,p) == True:
+                        update_pos(wknight2, wknight2_rect, selected_pos[p])
+                        selected_pos.append((0, 0))
+                        p += 1
 
-            if selected_pos[p-1] == bpawn3_rect.center:
-                if valid_move_bpawn(position_name(selected_pos[p-1]), position_name(selected_pos[p]), selected_pos[p-1], selected_pos[p]) == True:
-                    update_pos(bpawn3, bpawn3_rect, selected_pos[p])
-                    selected_pos.append((0,0))
-                    p+=1
+            # kings
+            if selected_pos[p - 1] == bking_rect.center:
+                if 'bking' in capturedpieces:
+                    print('GAME OVER!!! WHITE WINS!!!')
+                    selected_pos.append((0, 0))
+                    p += 1
+                elif turnvar == True:
+                    if valid_move_king(selected_pos[p-1],selected_pos[p],selected_pos,p) == True:
+                        update_pos(bking, bking_rect, selected_pos[p])
+                        selected_pos.append((0, 0))
+                        p += 1
 
-            if selected_pos[p-1] == bpawn4_rect.center:
-                if valid_move_bpawn(position_name(selected_pos[p-1]), position_name(selected_pos[p]), selected_pos[p-1], selected_pos[p]) == True:
-                    update_pos(bpawn4, bpawn4_rect, selected_pos[p])
-                    selected_pos.append((0,0))
-                    p+=1
+            if selected_pos[p - 1] == wking_rect.center:
+                if 'wking' in capturedpieces:
+                    print('GAME OVER!!! BLACK WINS!!!')
+                    selected_pos.append((0, 0))
+                    p += 1
+                elif turnvar == True:
+                    if valid_move_king(selected_pos[p-1],selected_pos[p],selected_pos,p) == True:
+                        update_pos(wking, wking_rect, selected_pos[p])
+                        selected_pos.append((0, 0))
+                        p += 1
 
-            if selected_pos[p-1] == bpawn5_rect.center:
-                if valid_move_bpawn(position_name(selected_pos[p-1]), position_name(selected_pos[p]), selected_pos[p-1], selected_pos[p]) == True:
-                    update_pos(bpawn5, bpawn5_rect, selected_pos[p])
-                    selected_pos.append((0,0))
-                    p+=1
+            # pawns
+            if selected_pos[p - 1] == bpawn1_rect.center:
+                if 'bpawn1' in capturedpieces:
+                    selected_pos.append((0, 0))
+                    p += 1
+                elif turnvar == True:
+                    if valid_move_bpawn(position_name(selected_pos[p - 1]), position_name(selected_pos[p]),
+                                        selected_pos[p-1],selected_pos[p],selected_pos,p) == True:
+                        update_pos(bpawn1, bpawn1_rect, selected_pos[p])
+                        selected_pos.append((0, 0))
+                        p += 1
 
-            if selected_pos[p-1] == bpawn6_rect.center:
-                if valid_move_bpawn(position_name(selected_pos[p-1]), position_name(selected_pos[p]), selected_pos[p-1], selected_pos[p]) == True:
-                    update_pos(bpawn6, bpawn6_rect, selected_pos[p])
-                    selected_pos.append((0,0))
-                    p+=1
+            if selected_pos[p - 1] == bpawn2_rect.center:
+                if 'bpawn2' in capturedpieces:
+                    selected_pos.append((0, 0))
+                    p += 1
+                elif turnvar == True:
+                    if valid_move_bpawn(position_name(selected_pos[p - 1]), position_name(selected_pos[p]),
+                                        selected_pos[p-1],selected_pos[p],selected_pos,p) == True:
+                        update_pos(bpawn2, bpawn2_rect, selected_pos[p])
+                        selected_pos.append((0, 0))
+                        p += 1
 
-            if selected_pos[p-1] == bpawn7_rect.center:
-                if valid_move_bpawn(position_name(selected_pos[p-1]), position_name(selected_pos[p]), selected_pos[p-1], selected_pos[p]) == True:
-                    update_pos(bpawn7, bpawn7_rect, selected_pos[p])
-                    selected_pos.append((0,0))
-                    p+=1
+            if selected_pos[p - 1] == bpawn3_rect.center:
+                if 'bpawn3' in capturedpieces:
+                    selected_pos.append((0, 0))
+                    p += 1
+                elif turnvar == True:
+                    if valid_move_bpawn(position_name(selected_pos[p - 1]), position_name(selected_pos[p]),
+                                        selected_pos[p-1],selected_pos[p],selected_pos,p) == True:
+                        update_pos(bpawn3, bpawn3_rect, selected_pos[p])
+                        selected_pos.append((0, 0))
+                        p += 1
 
-            if selected_pos[p-1] == bpawn8_rect.center:
-                if valid_move_bpawn(position_name(selected_pos[p-1]), position_name(selected_pos[p]), selected_pos[p-1], selected_pos[p]) == True:
-                    update_pos(bpawn8, bpawn8_rect, selected_pos[p])
-                    selected_pos.append((0,0))
-                    p+=1
+            if selected_pos[p - 1] == bpawn4_rect.center:
+                if 'bpawn4' in capturedpieces:
+                    selected_pos.append((0, 0))
+                    p += 1
+                elif turnvar == True:
+                    if valid_move_bpawn(position_name(selected_pos[p - 1]), position_name(selected_pos[p]),
+                                        selected_pos[p-1],selected_pos[p],selected_pos,p) == True:
+                        update_pos(bpawn4, bpawn4_rect, selected_pos[p])
+                        selected_pos.append((0, 0))
+                        p += 1
 
-            if selected_pos[p-1] == wpawn1_rect.center:
-                if valid_move_wpawn(position_name(selected_pos[p-1]), position_name(selected_pos[p]), selected_pos[p-1], selected_pos[p]) == True:
-                    update_pos(wpawn1, wpawn1_rect, selected_pos[p])
-                    selected_pos.append((0,0))
-                    p+=1
+            if selected_pos[p - 1] == bpawn5_rect.center:
+                if 'bpawn5' in capturedpieces:
+                    selected_pos.append((0, 0))
+                    p += 1
+                elif turnvar == True:
+                    if valid_move_bpawn(position_name(selected_pos[p - 1]), position_name(selected_pos[p]),
+                                        selected_pos[p-1],selected_pos[p],selected_pos,p) == True:
+                        update_pos(bpawn5, bpawn5_rect, selected_pos[p])
+                        selected_pos.append((0, 0))
+                        p += 1
 
-            if selected_pos[p-1] == wpawn2_rect.center:
-                if valid_move_wpawn(position_name(selected_pos[p-1]), position_name(selected_pos[p]), selected_pos[p-1], selected_pos[p]) == True:
-                    update_pos(wpawn2, wpawn2_rect, selected_pos[p])
-                    selected_pos.append((0,0))
-                    p+=1
+            if selected_pos[p - 1] == bpawn6_rect.center:
+                if 'bpawn6' in capturedpieces:
+                    selected_pos.append((0, 0))
+                    p += 1
+                elif turnvar == True:
+                    if valid_move_bpawn(position_name(selected_pos[p - 1]), position_name(selected_pos[p]),
+                                        selected_pos[p-1],selected_pos[p],selected_pos,p) == True:
+                        update_pos(bpawn6, bpawn6_rect, selected_pos[p])
+                        selected_pos.append((0, 0))
+                        p += 1
 
-            if selected_pos[p-1] == wpawn3_rect.center:
-                if valid_move_wpawn(position_name(selected_pos[p-1]), position_name(selected_pos[p]), selected_pos[p-1], selected_pos[p]) == True:
-                    update_pos(wpawn3, wpawn3_rect, selected_pos[p])
-                    selected_pos.append((0,0))
-                    p+=1
+            if selected_pos[p - 1] == bpawn7_rect.center:
+                if 'bpawn7' in capturedpieces:
+                    selected_pos.append((0, 0))
+                    p += 1
+                elif turnvar == True:
+                    if valid_move_bpawn(position_name(selected_pos[p - 1]), position_name(selected_pos[p]),
+                                        selected_pos[p-1],selected_pos[p],selected_pos,p) == True:
+                        update_pos(bpawn7, bpawn7_rect, selected_pos[p])
+                        selected_pos.append((0, 0))
+                        p += 1
 
-            if selected_pos[p-1] == wpawn4_rect.center:
-                if valid_move_wpawn(position_name(selected_pos[p-1]), position_name(selected_pos[p]), selected_pos[p-1], selected_pos[p]) == True:
-                    update_pos(wpawn4, wpawn4_rect, selected_pos[p])
-                    selected_pos.append((0,0))
-                    p+=1
+            if selected_pos[p - 1] == bpawn8_rect.center:
+                if 'bpawn8' in capturedpieces:
+                    selected_pos.append((0, 0))
+                    p += 1
+                elif turnvar == True:
+                    if valid_move_bpawn(position_name(selected_pos[p - 1]), position_name(selected_pos[p]),
+                                        selected_pos[p-1],selected_pos[p],selected_pos,p) == True:
+                        update_pos(bpawn8, bpawn8_rect, selected_pos[p])
+                        selected_pos.append((0, 0))
+                        p += 1
 
-            if selected_pos[p-1] == wpawn5_rect.center:
-                if valid_move_wpawn(position_name(selected_pos[p-1]), position_name(selected_pos[p]), selected_pos[p-1], selected_pos[p]) == True:
-                    update_pos(wpawn5, wpawn5_rect, selected_pos[p])
-                    selected_pos.append((0,0))
-                    p+=1
+            if selected_pos[p - 1] == wpawn1_rect.center:
+                if 'wpawn1' in capturedpieces:
+                    selected_pos.append((0, 0))
+                    p += 1
+                elif turnvar == True:
+                    if valid_move_wpawn(position_name(selected_pos[p - 1]), position_name(selected_pos[p]),
+                                        selected_pos[p-1],selected_pos[p],selected_pos,p) == True:
+                        update_pos(wpawn1, wpawn1_rect, selected_pos[p])
+                        selected_pos.append((0, 0))
+                        p += 1
 
-            if selected_pos[p-1] == wpawn6_rect.center:
-                if valid_move_wpawn(position_name(selected_pos[p-1]), position_name(selected_pos[p]), selected_pos[p-1], selected_pos[p]) == True:
-                    update_pos(wpawn6, wpawn6_rect, selected_pos[p])
-                    selected_pos.append((0,0))
-                    p+=1
+            if selected_pos[p - 1] == wpawn2_rect.center:
+                if 'wpawn2' in capturedpieces:
+                    selected_pos.append((0, 0))
+                    p += 1
+                elif turnvar == True:
+                    if valid_move_wpawn(position_name(selected_pos[p - 1]), position_name(selected_pos[p]),
+                                        selected_pos[p-1],selected_pos[p],selected_pos,p) == True:
+                        update_pos(wpawn2, wpawn2_rect, selected_pos[p])
+                        selected_pos.append((0, 0))
+                        p += 1
 
-            if selected_pos[p-1] == wpawn7_rect.center:
-                if valid_move_wpawn(position_name(selected_pos[p-1]), position_name(selected_pos[p]), selected_pos[p-1], selected_pos[p]) == True:
-                    update_pos(wpawn7, wpawn7_rect, selected_pos[p])
-                    selected_pos.append((0,0))
-                    p+=1
+            if selected_pos[p - 1] == wpawn3_rect.center:
+                if 'wpawn3' in capturedpieces:
+                    selected_pos.append((0, 0))
+                    p += 1
+                elif turnvar == True:
+                    if valid_move_wpawn(position_name(selected_pos[p - 1]), position_name(selected_pos[p]),
+                                        selected_pos[p-1],selected_pos[p],selected_pos,p) == True:
+                        update_pos(wpawn3, wpawn3_rect, selected_pos[p])
+                        selected_pos.append((0, 0))
+                        p += 1
 
-            if selected_pos[p-1] == wpawn8_rect.center:
-                if valid_move_wpawn(position_name(selected_pos[p-1]), position_name(selected_pos[p]), selected_pos[p-1], selected_pos[p]) == True:
-                    update_pos(wpawn8, wpawn8_rect, selected_pos[p])
-                    selected_pos.append((0,0))
-                    p+=1
+            if selected_pos[p - 1] == wpawn4_rect.center:
+                if 'wpawn4' in capturedpieces:
+                    selected_pos.append((0, 0))
+                    p += 1
+                elif turnvar == True:
+                    if valid_move_wpawn(position_name(selected_pos[p - 1]), position_name(selected_pos[p]),
+                                        selected_pos[p-1],selected_pos[p],selected_pos,p) == True:
+                        update_pos(wpawn4, wpawn4_rect, selected_pos[p])
+                        selected_pos.append((0, 0))
+                        p += 1
 
+            if selected_pos[p - 1] == wpawn5_rect.center:
+                if 'wpawn5' in capturedpieces:
+                    selected_pos.append((0, 0))
+                    p += 1
+                elif turnvar == True:
+                    if valid_move_wpawn(position_name(selected_pos[p - 1]), position_name(selected_pos[p]),
+                                        selected_pos[p-1],selected_pos[p],selected_pos,p) == True:
+                        update_pos(wpawn5, wpawn5_rect, selected_pos[p])
+                        selected_pos.append((0, 0))
+                        p += 1
+
+            if selected_pos[p - 1] == wpawn6_rect.center:
+                if 'wpawn6' in capturedpieces:
+                    selected_pos.append((0, 0))
+                    p += 1
+                elif turnvar == True:
+                    if valid_move_wpawn(position_name(selected_pos[p - 1]), position_name(selected_pos[p]),
+                                        selected_pos[p-1],selected_pos[p],selected_pos,p) == True:
+                        update_pos(wpawn6, wpawn6_rect, selected_pos[p])
+                        selected_pos.append((0, 0))
+                        p += 1
+
+            if selected_pos[p - 1] == wpawn7_rect.center:
+                if 'wpawn7' in capturedpieces:
+                    selected_pos.append((0, 0))
+                    p += 1
+                elif turnvar == True:
+                    if valid_move_wpawn(position_name(selected_pos[p - 1]), position_name(selected_pos[p]),
+                                        selected_pos[p-1],selected_pos[p],selected_pos,p) == True:
+                        update_pos(wpawn7, wpawn7_rect, selected_pos[p])
+                        selected_pos.append((0, 0))
+                        p += 1
+
+            if selected_pos[p - 1] == wpawn8_rect.center:
+                if 'wpawn8' in capturedpieces:
+                    selected_pos.append((0, 0))
+                    p += 1
+                elif turnvar == True:
+                    if valid_move_wpawn(position_name(selected_pos[p - 1]), position_name(selected_pos[p]),
+                                        selected_pos[p-1],selected_pos[p],selected_pos,p) == True:
+                        update_pos(wpawn8, wpawn8_rect, selected_pos[p])
+                        selected_pos.append((0, 0))
+                        p += 1
         #pieces()
         pygame.display.update()
 
