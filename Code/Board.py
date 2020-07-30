@@ -1,6 +1,6 @@
 import pygame
 import os
-from pygame.locals import *
+#from pygame.locals import *
 import math
 from Pieces import *
 
@@ -46,6 +46,7 @@ while ord(first_char) != 105:
 #function to identify name of position on which the piece exists
 def position_name(pos):
     for i in range (0,64):
+
         if pos == centers[i]:
             pos_name = position_names[i]
 
@@ -140,11 +141,6 @@ p = 0
 running  = True
 while running:
     for event in pygame.event.get():
-        """for i in range(0,8):
-            for j in range(0,8):
-                sq_col=cols[(i+j)%2]
-                pygame.draw.rect(board, sq_col, ((i*sq_dim), (j*sq_dim), sq_dim, sq_dim))"""
-
         if event.type == pygame.QUIT:
             running = False
         if event.type == pygame.KEYDOWN:

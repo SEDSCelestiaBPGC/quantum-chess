@@ -2,20 +2,17 @@ import pygame
 import os
 import math
 
-
 def square(x):
     return x * x
 
 def distance_formula(pos1, pos2):
     # pos1 and pos2 are tuples of 2 numbers
     return math.sqrt(square(pos2[0] - pos1[0]) + square(pos2[1] - pos1[1]))
-# ------------Rooks
-
-#Initalize
 
 media_path="C:/GitHub/quantum-chess/Media"
 
 # ------------Rooks
+
 #Initalize
 brook1 = pygame.image.load(os.path.join(media_path, "BlackRook.png"))
 brook1 = pygame.transform.scale(brook1,(50,50))
@@ -30,13 +27,12 @@ brook2_rect.center = 450,30
 wrook1 = pygame.image.load(os.path.join(media_path, "WhiteRook.png"))
 wrook1 = pygame.transform.scale(wrook1,(50,50))
 wrook1_rect = wrook1.get_rect()
-wrook1_rect.center = 450,450
+wrook1_rect.center = 30,450
 
 wrook2 = pygame.image.load(os.path.join(media_path, "WhiteRook.png"))
 wrook2 = pygame.transform.scale(wrook2,(50,50))
 wrook2_rect = wrook2.get_rect()
-wrook2_rect.center = 30,450
-
+wrook2_rect.center = 450,450
 
 #Valid Moves
 def valid_move_rook (old_pos_name,new_pos_name):
@@ -50,9 +46,7 @@ def valid_move_rook (old_pos_name,new_pos_name):
 
 # -------------------Bishops
 
-
 #Initalize
-
 bbishop1 = pygame.image.load(os.path.join(media_path, "BlackBishop.png"))
 bbishop1 = pygame.transform.scale(bbishop1,(50,50))
 bbishop1_rect = bbishop1.get_rect()
@@ -96,7 +90,6 @@ def valid_move_bishop (old_pos_name,new_pos_name):
         if ord(fc_old) == (ord(fc_new) - i):
             if ord(sc_old) == (ord(sc_new) - i):
                 return True
-
 
 
 #-----------------Queen
@@ -307,6 +300,7 @@ bpawn8 = pygame.image.load(os.path.join(media_path, "BlackPawn.png"))
 bpawn8 = pygame.transform.scale(bpawn8,(50,50))
 bpawn8_rect = bpawn8.get_rect()
 bpawn8_rect.center = 450,90
+
 #white pawns:
 wpawn1 = pygame.image.load(os.path.join(media_path, "WhitePawn.png"))
 wpawn1 = pygame.transform.scale(wpawn1,(50,50))
@@ -349,7 +343,7 @@ wpawn8_rect = wpawn8.get_rect()
 wpawn8_rect.center = 450,390
 
 #Valid Moves
-def valid_move_bpawn(old_pos_name, new_pos_name, s_pos_o, s_pos_n):        # Selected-POSition-Old/New
+def valid_move_bpawn(old_pos_name, new_pos_name, s_pos_o, s_pos_n):        # Selected-Position-Old/New
    if old_pos_name[slice(1)] == new_pos_name[slice(1)]:
        if  distance_formula(s_pos_n, s_pos_o) == 120:
            if old_pos_name[slice(1, 2)] == '7':
@@ -360,7 +354,7 @@ def valid_move_bpawn(old_pos_name, new_pos_name, s_pos_o, s_pos_n):        # Sel
    else:
        return False
 
-def valid_move_wpawn(old_pos_name, new_pos_name, s_pos_o, s_pos_n):        # Selected-POSition-Old/New
+def valid_move_wpawn(old_pos_name, new_pos_name, s_pos_o, s_pos_n):        # Selected-Position-Old/New
    if old_pos_name[slice(1)] == new_pos_name[slice(1)]:
        if  distance_formula(s_pos_n, s_pos_o) == 120:
            if old_pos_name[slice(1, 2)] == '2':
@@ -370,4 +364,3 @@ def valid_move_wpawn(old_pos_name, new_pos_name, s_pos_o, s_pos_n):        # Sel
                return True
    else:
        return False
-
