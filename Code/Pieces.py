@@ -666,7 +666,7 @@ wpawn2 = pygame.image.load("../Media/Whitepawn.png")
 wpawn2 = pygame.transform.scale(wpawn2, (50, 50))
 wpawn2_rect = wpawn2.get_rect()
 wpawn2_rect.center = 90, 390
-
+    
 wpawn3 = pygame.image.load("../Media/Whitepawn.png")
 wpawn3 = pygame.transform.scale(wpawn3, (50, 50))
 wpawn3_rect = wpawn3.get_rect()
