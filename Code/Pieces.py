@@ -3,7 +3,6 @@ import os
 from pygame.locals import *
 import math
 
-
 transparent = (0, 0, 0, 0)
 
 # list of centers
@@ -54,10 +53,7 @@ for i in range(48, 64):
     j = i - 32  # j= (i-48) + 16
     boardstate[centrans[i]] = pieceslist[j]
 
-
-
 movedpiece = ''
-
 
 # Function to update BoardState(BS)
 def bsupdate(s_pos_o, s_pos_n):
@@ -82,7 +78,6 @@ def isoccupied(pos):  # returns 0 if empty; 1 if occupied
             break
     return r
 
-
 # function to identify name of posiiion on which the piece exists
 def position_name(pos):
     for i in range(0, 64):
@@ -90,16 +85,13 @@ def position_name(pos):
             pos_name = position_names[i]
     return pos_name
 
-
 # nearest center to the mouseclick
 def square(x):
     return x * x
 
-
 def distance_formula(pos1, pos2):
     # pos1 and pos2 are tuples of 2 numbers
     return math.sqrt(square(pos2[0] - pos1[0]) + square(pos2[1] - pos1[1]))
-
 
 def nearest_center(pos_mouse):
     # x, y = pygame.mouse.get_pos()
@@ -110,7 +102,6 @@ def nearest_center(pos_mouse):
         if dist < temp:
             new_pos = centers[i]
             temp = dist
-
     return new_pos
 
 
@@ -674,7 +665,7 @@ wpawn2 = pygame.image.load("../Media/Whitepawn.png")
 wpawn2 = pygame.transform.scale(wpawn2, (50, 50))
 wpawn2_rect = wpawn2.get_rect()
 wpawn2_rect.center = 90, 390
-
+    
 wpawn3 = pygame.image.load("../Media/Whitepawn.png")
 wpawn3 = pygame.transform.scale(wpawn3, (50, 50))
 wpawn3_rect = wpawn3.get_rect()

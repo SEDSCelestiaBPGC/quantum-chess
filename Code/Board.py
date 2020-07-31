@@ -1,6 +1,6 @@
 import pygame
 import os
-from pygame.locals import *
+#from pygame.locals import *
 import math
 from Pieces import *
 from pygame.constants import (
@@ -15,7 +15,6 @@ white = (255, 255, 255)
 black = (0, 0, 0)
 grey = (169, 169, 169)
 transparent = (0, 0, 0, 0)
-
 
 #Make Board
 board_width=480
@@ -79,33 +78,38 @@ def pieces():
     board.blit(wpawn7, wpawn7_rect)
     board.blit(wpawn8, wpawn8_rect)
 
+pieces()
+
+def update_pos(im, im_rect, final_pos):
+    t=im_rect.center[0]-(sq_dim/2)
+    l=im_rect.center[1]-(sq_dim/2)
+    x=int(t/sq_dim)
+    y=int(l/sq_dim)
+    pygame.draw.rect(board, cols[(x+y)%2] , (t,l,sq_dim, sq_dim))
+    im_rect.center = final_pos
+    board.blit(im, im_rect)
 
 selected_pos = [(0,0)]
 p = 0
 
-
 turnvar = True
 running  = True
-
 while running:
     for event in pygame.event.get():
-        for i in range(0, 8):
-            for j in range(0, 8):
-                sq_col = cols[(i + j) % 2]
-                pygame.draw.rect(board, sq_col, ((i * sq_dim), (j * sq_dim), sq_dim, sq_dim))
-
         if event.type == pygame.QUIT:
             running = False
+
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_ESCAPE:
                 running = False
+
         elif event.type == MOUSEBUTTONDOWN:
             pass
+
         elif event.type == MOUSEBUTTONUP:
             turnvar = turn(selected_pos,p)
             selected_pos.append(nearest_center(pygame.mouse.get_pos()))
             p += 1
-
 
             # rooks
             if selected_pos[p - 1] == brook1_rect.center:
@@ -114,7 +118,7 @@ while running:
                     p += 1
                 elif turnvar == True:
                     if valid_move_rook(position_name(selected_pos[p - 1]), position_name(selected_pos[p]),selected_pos,p) == True:
-                        brook1_rect.center = selected_pos[p]
+                        update_pos(brook1, brook1_rect, selected_pos[p])
                         selected_pos.append((0, 0))
                         p += 1
 
@@ -124,7 +128,7 @@ while running:
                     p += 1
                 elif turnvar == True:
                     if valid_move_rook(position_name(selected_pos[p - 1]), position_name(selected_pos[p]),selected_pos,p) == True:
-                        brook2_rect.center = selected_pos[p]
+                        update_pos(brook2, brook2_rect, selected_pos[p])
                         selected_pos.append((0, 0))
                         p += 1
 
@@ -134,7 +138,7 @@ while running:
                     p += 1
                 elif turnvar == True:
                     if valid_move_rook(position_name(selected_pos[p - 1]), position_name(selected_pos[p]),selected_pos,p) == True:
-                        wrook1_rect.center = selected_pos[p]
+                        update_pos(wrook1, wrook1_rect, selected_pos[p])
                         selected_pos.append((0, 0))
                         p += 1
 
@@ -144,7 +148,7 @@ while running:
                     p += 1
                 elif turnvar == True:
                     if valid_move_rook(position_name(selected_pos[p - 1]), position_name(selected_pos[p]),selected_pos,p) == True:
-                        wrook2_rect.center = selected_pos[p]
+                        update_pos(wrook2, wrook2_rect, selected_pos[p])
                         selected_pos.append((0, 0))
                         p += 1
 
@@ -156,7 +160,7 @@ while running:
                 elif turnvar == True:
                     if valid_move_bishop(position_name(selected_pos[p - 1]), position_name(selected_pos[p]),
                                          selected_pos[p-1],selected_pos[p],selected_pos,p) == True:
-                        bbishop1_rect.center = selected_pos[p]
+                        update_pos(bbishop1, bbishop1_rect, selected_pos[p])
                         selected_pos.append((0, 0))
                         p += 1
 
@@ -167,7 +171,7 @@ while running:
                 elif turnvar == True:
                     if valid_move_bishop(position_name(selected_pos[p - 1]), position_name(selected_pos[p]),
                                          selected_pos[p-1],selected_pos[p],selected_pos,p) == True:
-                        bbishop2_rect.center = selected_pos[p]
+                        update_pos(bbishop2, bbishop2_rect, selected_pos[p])
                         selected_pos.append((0, 0))
                         p += 1
 
@@ -178,7 +182,7 @@ while running:
                 elif turnvar == True:
                     if valid_move_bishop(position_name(selected_pos[p - 1]), position_name(selected_pos[p]),
                                          selected_pos[p - 1], selected_pos[p],selected_pos,p) == True:
-                        wbishop1_rect.center = selected_pos[p]
+                        update_pos(wbishop1, wbishop1_rect, selected_pos[p])
                         selected_pos.append((0, 0))
                         p += 1
 
@@ -189,7 +193,7 @@ while running:
                 elif turnvar == True:
                     if valid_move_bishop(position_name(selected_pos[p - 1]), position_name(selected_pos[p]),
                                          selected_pos[p - 1], selected_pos[p],selected_pos,p) == True:
-                        wbishop2_rect.center = selected_pos[p]
+                        update_pos(wbishop2, wbishop2_rect, selected_pos[p])
                         selected_pos.append((0, 0))
                         p += 1
 
@@ -201,7 +205,7 @@ while running:
                 elif turnvar == True:
                     if valid_move_queen(position_name(selected_pos[p - 1]), position_name(selected_pos[p]),
                                         selected_pos[p - 1], selected_pos[p],selected_pos,p) == True:
-                        bqueen_rect.center = selected_pos[p]
+                        update_pos(bqueen, bqueen_rect, selected_pos[p])
                         selected_pos.append((0, 0))
                         p += 1
 
@@ -212,7 +216,7 @@ while running:
                 elif turnvar == True:
                     if valid_move_queen(position_name(selected_pos[p - 1]), position_name(selected_pos[p]),
                                         selected_pos[p - 1], selected_pos[p],selected_pos,p) == True:
-                        wqueen_rect.center = selected_pos[p]
+                        update_pos(wqueen, wqueen_rect, selected_pos[p])
                         selected_pos.append((0, 0))
                         p += 1
 
@@ -223,7 +227,7 @@ while running:
                     p += 1
                 elif turnvar == True:
                     if valid_move_knight(selected_pos[p - 1], selected_pos[p],selected_pos,p) == True:
-                        bknight1_rect.center = selected_pos[p]
+                        update_pos(bknight1, bknight1_rect, selected_pos[p])
                         selected_pos.append((0, 0))
                         p += 1
 
@@ -233,7 +237,7 @@ while running:
                     p += 1
                 elif turnvar == True:
                     if valid_move_knight(selected_pos[p-1],selected_pos[p],selected_pos,p) == True:
-                        bknight2_rect.center = selected_pos[p]
+                        update_pos(bknight2, bknight2_rect, selected_pos[p])
                         selected_pos.append((0, 0))
                         p += 1
 
@@ -243,7 +247,7 @@ while running:
                     p += 1
                 elif turnvar == True:
                     if valid_move_knight(selected_pos[p-1],selected_pos[p],selected_pos,p) == True:
-                        wknight1_rect.center = selected_pos[p]
+                        update_pos(wknight1, wknight1_rect, selected_pos[p])
                         selected_pos.append((0, 0))
                         p += 1
 
@@ -253,7 +257,7 @@ while running:
                     p += 1
                 elif turnvar == True:
                     if valid_move_knight(selected_pos[p-1],selected_pos[p],selected_pos,p) == True:
-                        wknight2_rect.center = selected_pos[p]
+                        update_pos(wknight2, wknight2_rect, selected_pos[p])
                         selected_pos.append((0, 0))
                         p += 1
 
@@ -265,7 +269,7 @@ while running:
                     p += 1
                 elif turnvar == True:
                     if valid_move_king(selected_pos[p-1],selected_pos[p],selected_pos,p) == True:
-                        bking_rect.center = selected_pos[p]
+                        update_pos(bking, bking_rect, selected_pos[p])
                         selected_pos.append((0, 0))
                         p += 1
 
@@ -276,7 +280,7 @@ while running:
                     p += 1
                 elif turnvar == True:
                     if valid_move_king(selected_pos[p-1],selected_pos[p],selected_pos,p) == True:
-                        wking_rect.center = selected_pos[p]
+                        update_pos(wking, wking_rect, selected_pos[p])
                         selected_pos.append((0, 0))
                         p += 1
 
@@ -288,7 +292,7 @@ while running:
                 elif turnvar == True:
                     if valid_move_bpawn(position_name(selected_pos[p - 1]), position_name(selected_pos[p]),
                                         selected_pos[p-1],selected_pos[p],selected_pos,p) == True:
-                        bpawn1_rect.center = selected_pos[p]
+                        update_pos(bpawn1, bpawn1_rect, selected_pos[p])
                         selected_pos.append((0, 0))
                         p += 1
 
@@ -299,7 +303,7 @@ while running:
                 elif turnvar == True:
                     if valid_move_bpawn(position_name(selected_pos[p - 1]), position_name(selected_pos[p]),
                                         selected_pos[p-1],selected_pos[p],selected_pos,p) == True:
-                        bpawn2_rect.center = selected_pos[p]
+                        update_pos(bpawn2, bpawn2_rect, selected_pos[p])
                         selected_pos.append((0, 0))
                         p += 1
 
@@ -310,7 +314,7 @@ while running:
                 elif turnvar == True:
                     if valid_move_bpawn(position_name(selected_pos[p - 1]), position_name(selected_pos[p]),
                                         selected_pos[p-1],selected_pos[p],selected_pos,p) == True:
-                        bpawn3_rect.center = selected_pos[p]
+                        update_pos(bpawn3, bpawn3_rect, selected_pos[p])
                         selected_pos.append((0, 0))
                         p += 1
 
@@ -321,7 +325,7 @@ while running:
                 elif turnvar == True:
                     if valid_move_bpawn(position_name(selected_pos[p - 1]), position_name(selected_pos[p]),
                                         selected_pos[p-1],selected_pos[p],selected_pos,p) == True:
-                        bpawn4_rect.center = selected_pos[p]
+                        update_pos(bpawn4, bpawn4_rect, selected_pos[p])
                         selected_pos.append((0, 0))
                         p += 1
 
@@ -332,7 +336,7 @@ while running:
                 elif turnvar == True:
                     if valid_move_bpawn(position_name(selected_pos[p - 1]), position_name(selected_pos[p]),
                                         selected_pos[p-1],selected_pos[p],selected_pos,p) == True:
-                        bpawn5_rect.center = selected_pos[p]
+                        update_pos(bpawn5, bpawn5_rect, selected_pos[p])
                         selected_pos.append((0, 0))
                         p += 1
 
@@ -343,7 +347,7 @@ while running:
                 elif turnvar == True:
                     if valid_move_bpawn(position_name(selected_pos[p - 1]), position_name(selected_pos[p]),
                                         selected_pos[p-1],selected_pos[p],selected_pos,p) == True:
-                        bpawn6_rect.center = selected_pos[p]
+                        update_pos(bpawn6, bpawn6_rect, selected_pos[p])
                         selected_pos.append((0, 0))
                         p += 1
 
@@ -354,7 +358,7 @@ while running:
                 elif turnvar == True:
                     if valid_move_bpawn(position_name(selected_pos[p - 1]), position_name(selected_pos[p]),
                                         selected_pos[p-1],selected_pos[p],selected_pos,p) == True:
-                        bpawn7_rect.center = selected_pos[p]
+                        update_pos(bpawn7, bpawn7_rect, selected_pos[p])
                         selected_pos.append((0, 0))
                         p += 1
 
@@ -365,7 +369,7 @@ while running:
                 elif turnvar == True:
                     if valid_move_bpawn(position_name(selected_pos[p - 1]), position_name(selected_pos[p]),
                                         selected_pos[p-1],selected_pos[p],selected_pos,p) == True:
-                        bpawn8_rect.center = selected_pos[p]
+                        update_pos(bpawn8, bpawn8_rect, selected_pos[p])
                         selected_pos.append((0, 0))
                         p += 1
 
@@ -376,7 +380,7 @@ while running:
                 elif turnvar == True:
                     if valid_move_wpawn(position_name(selected_pos[p - 1]), position_name(selected_pos[p]),
                                         selected_pos[p-1],selected_pos[p],selected_pos,p) == True:
-                        wpawn1_rect.center = selected_pos[p]
+                        update_pos(wpawn1, wpawn1_rect, selected_pos[p])
                         selected_pos.append((0, 0))
                         p += 1
 
@@ -387,7 +391,7 @@ while running:
                 elif turnvar == True:
                     if valid_move_wpawn(position_name(selected_pos[p - 1]), position_name(selected_pos[p]),
                                         selected_pos[p-1],selected_pos[p],selected_pos,p) == True:
-                        wpawn2_rect.center = selected_pos[p]
+                        update_pos(wpawn2, wpawn2_rect, selected_pos[p])
                         selected_pos.append((0, 0))
                         p += 1
 
@@ -398,7 +402,7 @@ while running:
                 elif turnvar == True:
                     if valid_move_wpawn(position_name(selected_pos[p - 1]), position_name(selected_pos[p]),
                                         selected_pos[p-1],selected_pos[p],selected_pos,p) == True:
-                        wpawn3_rect.center = selected_pos[p]
+                        update_pos(wpawn3, wpawn3_rect, selected_pos[p])
                         selected_pos.append((0, 0))
                         p += 1
 
@@ -409,7 +413,7 @@ while running:
                 elif turnvar == True:
                     if valid_move_wpawn(position_name(selected_pos[p - 1]), position_name(selected_pos[p]),
                                         selected_pos[p-1],selected_pos[p],selected_pos,p) == True:
-                        wpawn4_rect.center = selected_pos[p]
+                        update_pos(wpawn4, wpawn4_rect, selected_pos[p])
                         selected_pos.append((0, 0))
                         p += 1
 
@@ -420,7 +424,7 @@ while running:
                 elif turnvar == True:
                     if valid_move_wpawn(position_name(selected_pos[p - 1]), position_name(selected_pos[p]),
                                         selected_pos[p-1],selected_pos[p],selected_pos,p) == True:
-                        wpawn5_rect.center = selected_pos[p]
+                        update_pos(wpawn5, wpawn5_rect, selected_pos[p])
                         selected_pos.append((0, 0))
                         p += 1
 
@@ -431,7 +435,7 @@ while running:
                 elif turnvar == True:
                     if valid_move_wpawn(position_name(selected_pos[p - 1]), position_name(selected_pos[p]),
                                         selected_pos[p-1],selected_pos[p],selected_pos,p) == True:
-                        wpawn6_rect.center = selected_pos[p]
+                        update_pos(wpawn6, wpawn6_rect, selected_pos[p])
                         selected_pos.append((0, 0))
                         p += 1
 
@@ -442,7 +446,7 @@ while running:
                 elif turnvar == True:
                     if valid_move_wpawn(position_name(selected_pos[p - 1]), position_name(selected_pos[p]),
                                         selected_pos[p-1],selected_pos[p],selected_pos,p) == True:
-                        wpawn7_rect.center = selected_pos[p]
+                        update_pos(wpawn7, wpawn7_rect, selected_pos[p])
                         selected_pos.append((0, 0))
                         p += 1
 
@@ -453,11 +457,10 @@ while running:
                 elif turnvar == True:
                     if valid_move_wpawn(position_name(selected_pos[p - 1]), position_name(selected_pos[p]),
                                         selected_pos[p-1],selected_pos[p],selected_pos,p) == True:
-                        wpawn8_rect.center = selected_pos[p]
+                        update_pos(wpawn8, wpawn8_rect, selected_pos[p])
                         selected_pos.append((0, 0))
                         p += 1
-
-        pieces()
+        #pieces()
         pygame.display.update()
 
 pygame.quit()
