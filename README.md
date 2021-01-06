@@ -1,5 +1,7 @@
 # quantum-chess
 
+![](https://github.com/SEDSCelestiaBPGC/quantum-chess/blob/master/Media/Poster.jpeg)
+
 Hi! Welcome to the Quantum Chess repo.
 
 Here you will find the code to a functional quantum chessboard, on which two players can play a game. Quantum chess differs from classical chess in that it lends various quantum abilities to its pieces in the form of superposition (as though you are playing on two boards at once!) and entanglement (measuring one affects many!). This offers a twist to the age old game and helps us demonstrate these quantum phenomena.
