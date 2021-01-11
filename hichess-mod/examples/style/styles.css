@@ -1,0 +1,103 @@
+CellWidget {
+    border: transparent;
+    border-style: outset;
+    background: transparent;
+    background-repeat: no-repeat;
+    background-position: center center;
+}
+
+CellWidget:!checked {
+    background: transparent;
+    background-repeat: no-repeat;
+    background-position: center center;
+}
+
+CellWidget:checked {
+    background-color: rgba(110, 155, 100, 0.7);
+}
+
+CellWidget[highlighted=true][piece=false] {
+    background-color: rgba(175, 165, 220, 0.6);
+}
+
+CellWidget[highlighted=true][piece=false]:hover {
+    background-color: rgba(175, 165, 220, 0.8);
+}
+
+CellWidget[highlighted=true][piece=true] {
+    background-color: rgba(245, 145, 140, 0.6);
+}
+
+CellWidget[highlighted=true][piece=true]:hover {
+    background-color: rgba(245, 145, 140, 0.8);
+}
+
+CellWidget[highlighted=false] {}
+
+CellWidget[justMoved=true] {
+    background-color: rgba(255, 242, 0, 0.5);
+}
+
+CellWidget[justMoved=false] {}
+
+CellWidget[marked=true] {
+    background-color: rgba(35, 175, 75, 0.7);
+}
+
+CellWidget[marked=false] {}
+
+#cell_white_pawn {
+    border-image: url(:/images/white_pawn.png) 0 0 0 0  stretch stretch;
+}
+
+#cell_black_pawn {
+    border-image: url(:/images/black_pawn.png)  0 0 0 0  stretch stretch;
+}
+
+#cell_white_rook {
+    border-image: url(:/images/white_rook.png)  0 0 0 0  stretch stretch;
+}
+
+#cell_black_rook {
+    border-image: url(:/images/black_rook.png)  0 0 0 0  stretch stretch;
+}
+
+#cell_white_knight {
+    border-image: url(:/images/white_knight.png)  0 0 0 0  stretch stretch;
+}
+
+#cell_black_knight {
+    border-image: url(:/images/black_knight.png)  0 0 0 0  stretch stretch;
+}
+
+#cell_white_bishop {
+    border-image: url(:/images/white_bishop.png)  0 0 0 0  stretch stretch;
+}
+
+#cell_black_bishop {
+    border-image: url(:/images/black_bishop.png)  0 0 0 0  stretch stretch;
+}
+
+#cell_white_king {
+    border-image: url(:/images/white_king.png)  0 0 0 0  stretch stretch;
+}
+
+#cell_white_king[inCheck=true] {
+    background-color: qradialgradient(cx: 0.5, cy: 0.5, radius: 0.8, fx: 0.5, fy: 0.5, stop: 0 red, stop: 1 transparent)
+}
+
+#cell_black_king {
+    border-image: url(:/images/black_king.png)  0 0 0 0  stretch stretch;
+}
+
+#cell_black_king[inCheck=true] {
+    background-color: qradialgradient(cx: 0.5, cy: 0.5, radius: 0.8, fx: 0.5, fy: 0.5, stop: 0 red, stop: 1 transparent)
+}
+
+#cell_white_queen {
+    border-image: url(:/images/white_queen.png)  0 0 0 0  stretch stretch;
+}
+
+#cell_black_queen {
+    border-image: url(:/images/black_queen.png)  0 0 0 0  stretch stretch;
+}
