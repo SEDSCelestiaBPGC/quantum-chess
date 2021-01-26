@@ -4,8 +4,7 @@
 
 Hi! Welcome to the Quantum Chess repo.
 
-Here you will find the code to a functional quantum chessboard, on which two players can play a game. Quantum chess differs from classical chess in that it lends various quantum abilities to its pieces in the form of superposition (as though you are playing on two boards at once!) and entanglement (measuring one affects many!). This offers a twist to the age old game and helps us demonstrate these quantum phenomena.
-Our qchessboard is built using Qiskit and Pygame.
+Chess is a much loved, classic game, but what happens when we give it a quantum twist? Quantum chess works on the same rules as classical chess, but each piece has quantum abilities too- you can put a piece in a superposition, or even entangle two pieces. Our version is built using Qiskit, and is a great way to demonstrate and understand quantum properties. The game needs a good understanding of how various probabilities interact, to be able to comprehend how the state collapses upon observation, which happens when the piece is either capturing or being captured, and decides the position of a piece in superposition. These probabilities are decided by the quantum state of the piece, and thus adds an element of chance to this game of strategy.
 
 ## Rules
 - The board is a regular 8x8 chessboard with the same 16 pieces on each side(black and white).
