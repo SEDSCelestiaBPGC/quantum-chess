@@ -3,13 +3,15 @@ from qiskit import QuantumCircuit, ClassicalRegister, QuantumRegister
 from qiskit import Aer, execute
 from qiskit.quantum_info.operators import Operator
 from qiskit.extensions import UnitaryGate, Initialize
+from qiskit import IBMQ
 import math
 
 backend = Aer.get_backend('qasm_simulator')
 
 class quantum_obj:
 
-    def __init__(self, pos):
+    def __init__(self, pos, piece):
+        self.piece =  piece
         self.qnum = { '0': [pos, 1] }
         self.ent = []
 
@@ -85,8 +87,8 @@ class quantum_obj:
         Else, weighted split.
 
         Let P[P at a1] = x
-        Let P[Q at a2] = y
-        Let P[R at b1] = z
+        Let P[Y at a2] = y
+        Let P[X at b1] = z
 
         After the move, 
         P[P at a1] = x * P[both Q and R are there] = x*y*z
