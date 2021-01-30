@@ -342,7 +342,7 @@ class quantum_obj:
 # R - 0110 (0.125)
 # S - 0111 (0.125)
 
-# //X - 000 (1/16 = 0.0625) [ignore X since obj1==obj2 for this test case]
+# X - 000 (1/16 = 0.0625) [ignore X since obj1==obj2 for this test case]
 # Y - 00 (0.5 + 0.5*(1-0.5-0.125) = 0.6875)
 # Z - 01 (0.125 + 0.5*(1-0.5-0.125) = 0.3125)
 

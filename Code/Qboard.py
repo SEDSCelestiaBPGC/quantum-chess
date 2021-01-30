@@ -1,6 +1,6 @@
 
 from PySide2.QtWidgets import QApplication, QMainWindow, QWidget, QPushButton, QVBoxLayout
-from PySide2.QtCore import QFile, QTextStream
+from PySide2.QtCore import QFile, QObject, QTextStream
 from PySide2.QtGui import QPixmap
 import sys
 import chess
@@ -81,8 +81,8 @@ class BoardWidget_new(hichess.BoardWidget):
 class MainWindow(QMainWindow):
     def __init__(self, parent=None):
         super(MainWindow, self).__init__(parent)
-        self.quantum_mode = False
-        self.split_turn = False
+
+        self.previous_move = chess.Move(chess.A1, chess.A2) # //HACK get previous move from board?
 
         self.centralWidget = QWidget()
         self.mainLayout = QVBoxLayout()
@@ -91,6 +91,8 @@ class MainWindow(QMainWindow):
         self.boardWidget = BoardWidget_new()
         #quant stuff here plis
         self.Qpieces = []
+        self.quantum_mode = False
+        self.split_turn = False # for second move when split
         self.boardWidget.foreachCells(self.setQboard)
 
         # The user can interract with both colors of the board
@@ -120,23 +122,79 @@ class MainWindow(QMainWindow):
         self.boardWidget.moveMade.connect(self.checkQmove)
     
     def setQboard(self, cellWid):
-        q_pc = quantum_obj(self.boardWidget.squareOf(cellWid), cellWid.getPiece())
-        self.Qpieces.append(q_pc)
+        '''
+        sets initial qObjs when game starts
+        '''
+        if cellWid.getPiece() is not None:
+            q_pc = quantum_obj(self.boardWidget.squareOf(cellWid), cellWid.getPiece())
+            self.Qpieces.append(q_pc)
+
+    def updateQboard(self, turn):
+        '''
+        turn = True if white to play
+        Updates board according to Qpieces, useful when calling measure
+        '''
+        self.boardWidget.board = chess.Board(fen = None) 
+        for qObj in self.Qpieces:
+            for state in qObj.qnum.keys():
+                self.boardWidget.board.set_piece_at(qObj.qnum[state][0], qObj.piece)
+        self.boardWidget.board.turn = turn
+        self.boardWidget._synchronize()
 
 
     def checkQmove(self, move):
-        qObj, qObj_State = self.findQobj(move.from_square)
-        print(qObj.piece, qObj.qnum[qObj_State][1])
-        if(self.quantum_mode):
-            self.boardWidget.board.turn = not self.boardWidget.board.turn
-            self.boardWidget.setPieceAt(move.from_square, qObj.piece)
-            self.split_turn = True
+        '''
+        Handles all special moves for quantum chess
+        '''
+        qObj, qObj_state = self.findQobj(move.from_square)
+        print(qObj.piece, qObj.qnum[qObj_state][1])
 
-        qObj.qnum[qObj_State][0] = move.to_square
+        # Attacking, measures if attacked/attacking has more than one state/add 
+        if self.findQobj(move.to_square) is not None:
+            qObj_attacked, qObj_attacked_state = self.findQobj(move.to_square)
+            self.quantum_mode = False # //HACK shouldn't disable quantum_mode if we allow shrodinger's pcs
+            self.split_turn = False
+
+            if qObj.qnum[qObj_state][1] !=1:
+                qObj.meas()
+                self.updateQboard(turn = not qObj.piece.symbol().isupper()) 
+                if qObj.qnum['0'][0] == move.from_square: # attack*ing* piece exists
+                    self.checkQmove(move)
+                return
+
+            if  qObj_attacked.qnum[qObj_attacked_state][1] !=1:
+                qObj_attacked.meas()
+                if qObj_attacked.qnum['0'][0] != move.to_square: # attack*ed* piece doen't exist
+                    qObj.qnum[qObj_state][0] = move.to_square
+
+                self.updateQboard(turn = not qObj.piece.symbol().isupper()) 
+                self.checkQmove(move)
+                return
+
+            del qObj_attacked.qnum[qObj_attacked_state]
+            qObj.qnum[qObj_state][0] = move.to_square
+            self.updateQboard(turn= not qObj.piece.symbol().isupper())
+            return
+
+
+        if not self.split_turn:
+            if(self.quantum_mode):
+                self.boardWidget.board.turn = not self.boardWidget.board.turn
+                self.boardWidget.setPieceAt(move.from_square, qObj.piece)
+                self.split_turn = True
+                self.previous_move = move
+            else: 
+                qObj.qnum[qObj_state][0] = move.to_square
+        else:
+            # //TODO allow only the other half to move
+            self.split_move(qObj, qObj_state, move.to_square, self.previous_move.to_square)
+
 
 
     def split_move(self, qObj, qObj_State, square1, square2):
-        qObj.split(qObj.qnum[qObj_State])
+        qObj.split(qObj_State, square1, square2)
+        self.split_turn = False
+        self.quantum_mode = False
         pass
 
     def findQobj(self, square):
@@ -161,5 +219,4 @@ if __name__ == "__main__":
     # mainWindow.boardWidget.moveMade.connect(mainWindow.sayHi)
     # mainWindow.boardWidget.cellWidgetClickedSig.connect(mainWindow.on_click_rel)
 
-    
     sys.exit(app.exec_())
