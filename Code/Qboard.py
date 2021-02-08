@@ -21,7 +21,18 @@ from hichess import CellWidget, _PromotionDialog, IllegalMove
 
 class BoardWidget_new(hichess.BoardWidget):
 
+    split_turn = False # //HACK find a way to connect this to the split_turn variable of main or vice versa
     moveMade = QtCore.Signal(chess.Move)
+    cellWidgetClickedSig = QtCore.Signal(hichess.CellWidget)
+
+    def pieceCanBePushedTo(self, w: CellWidget):
+        """ Yields the numbers of squares that the piece on the cell widget can be legally pushed
+        to. """
+
+        # //TODO find a way to add legal moves for entanglement here
+        for move in self.board.legal_moves:
+            if move.from_square == self.squareOf(w):
+                yield move.to_square
 
     def _push(self, move: chess.Move) -> None:
         self._updateJustMovedCells(False)
@@ -64,6 +75,9 @@ class BoardWidget_new(hichess.BoardWidget):
         self.moveMade.emit(move)
         self.movePushed.emit(san)
 
+    def _updateJustMovedCells(self, justMoved):
+        # //TODO finish this func
+        pass
 
     @QtCore.Slot()
     def _onCellWidgetClicked(self, w):
@@ -76,7 +90,34 @@ class BoardWidget_new(hichess.BoardWidget):
                               lambda w: w.setChecked(False))
         else:
             self.unmarkCells()
-    cellWidgetClickedSig = QtCore.Signal(hichess.CellWidget)
+
+    @QtCore.Slot()
+    def _onCellWidgetToggled(self, w: CellWidget, toggled: bool):
+        if toggled:
+            if self.board.turn != w.getPiece().color or not self._isCellAccessible(w):
+                w.setChecked(False)
+                return
+
+            if self.blockBoardOnPop and self.popStack:
+                w.setChecked(False)
+                return
+            
+            if not len(self.board.move_stack) <1 and self.split_turn:
+                if self.board.peek().from_square != self.squareOf(w):
+                    return 
+            # //FIXME this lets player check multiple pcs (check stylesheet for 'checked' variable)
+
+            def callback(_w: CellWidget):
+                if _w != w:
+                    _w.setChecked(False)
+
+            self.foreachCells(CellWidget.unmark, CellWidget.unhighlight, callback)
+            if not self.highlightLegalMoveCellsFor(w):
+                w.setChecked(False)
+            self.lastCheckedCellWidget = w
+        else:
+            self.unhighlightCells()
+
 
 class MainWindow(QMainWindow):
     def __init__(self, parent=None):
@@ -140,20 +181,24 @@ class MainWindow(QMainWindow):
                 self.boardWidget.board.set_piece_at(qObj.qnum[state][0], qObj.piece)
         self.boardWidget.board.turn = turn
         self.boardWidget._synchronize()
-
+        # self.boardWidget.board.move_stack.append(self.previous_move)
+        # print(self.previous_move)
 
     def checkQmove(self, move):
         '''
         Handles all special moves for quantum chess
         '''
+        print(self.boardWidget.board.move_stack, len(self.boardWidget.board.move_stack))
         qObj, qObj_state = self.findQobj(move.from_square)
         print(qObj.piece, qObj.qnum[qObj_state][1])
 
         # Attacking, measures if attacked/attacking has more than one state/add 
+        # //HACK Should probably be another function (?)
         if self.findQobj(move.to_square) is not None:
             qObj_attacked, qObj_attacked_state = self.findQobj(move.to_square)
             self.quantum_mode = False # //HACK shouldn't disable quantum_mode if we allow shrodinger's pcs
             self.split_turn = False
+            self.boardWidget.split_turn = False
 
             if qObj.qnum[qObj_state][1] !=1:
                 qObj.meas()
@@ -176,24 +221,23 @@ class MainWindow(QMainWindow):
             self.updateQboard(turn= not qObj.piece.symbol().isupper())
             return
 
-
         if not self.split_turn:
             if(self.quantum_mode):
                 self.boardWidget.board.turn = not self.boardWidget.board.turn
                 self.boardWidget.setPieceAt(move.from_square, qObj.piece)
                 self.split_turn = True
+                self.boardWidget.split_turn = True
                 self.previous_move = move
+                self.boardWidget.board.move_stack.append(self.previous_move)
             else: 
                 qObj.qnum[qObj_state][0] = move.to_square
         else:
-            # //TODO allow only the other half to move
             self.split_move(qObj, qObj_state, move.to_square, self.previous_move.to_square)
-
-
 
     def split_move(self, qObj, qObj_State, square1, square2):
         qObj.split(qObj_State, square1, square2)
         self.split_turn = False
+        self.boardWidget.split_turn = False
         self.quantum_mode = False
         pass
 
