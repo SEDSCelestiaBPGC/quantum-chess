@@ -1,4 +1,4 @@
-
+# from Code.Quant import quantum_obj
 from PySide2.QtWidgets import QApplication, QMainWindow, QWidget, QPushButton, QVBoxLayout
 from PySide2.QtCore import QFile, QObject, QTextStream
 from PySide2.QtGui import QPixmap
@@ -18,24 +18,170 @@ from context import resources
 from Quant import *
 
 from hichess import CellWidget, _PromotionDialog, IllegalMove
+from chess import *
 
-class BoardWidget_new(hichess.BoardWidget):
+class QchessBoard(chess.Board):
+    qpcs = []
 
-    split_turn = False # //HACK find a way to connect this to the split_turn variable of main or vice versa
+    def attacks_mask(self, square: Square) -> Bitboard:
+        bb_square = BB_SQUARES[square]
+
+        if bb_square & self.pawns:
+            color = bool(bb_square & self.occupied_co[WHITE])
+            return BB_PAWN_ATTACKS[color][square]
+        elif bb_square & self.knights:
+            return BB_KNIGHT_ATTACKS[square]
+        elif bb_square & self.kings:
+            return BB_KING_ATTACKS[square]
+        else:
+            attacks = 0
+            if bb_square & self.bishops or bb_square & self.queens:
+                attacks = BB_DIAG_ATTACKS[square][BB_DIAG_MASKS[square] & self.occupied]
+            if bb_square & self.rooks or bb_square & self.queens:
+                attacks |= (BB_RANK_ATTACKS[square][BB_RANK_MASKS[square] & self.occupied] |
+                            BB_FILE_ATTACKS[square][BB_FILE_MASKS[square] & self.occupied])
+            return attacks
+
+    def generate_pseudo_legal_moves(self, from_mask = chess.BB_ALL, to_mask = chess.BB_ALL ):
+        temp_occupied_co = self.occupied_co.copy()
+        print('p: ' , temp_occupied_co)
+        for qpc in self.qpcs:
+            if qpc.qnum[list(qpc.qnum.keys())[0]][1] !=1:
+                for state in qpc.qnum.keys():
+                    temp_occupied_co[self.turn] &= ~chess.BB_SQUARES[qpc.qnum[state][0]]
+                    temp_occupied_co[not self.turn] &= ~chess.BB_SQUARES[qpc.qnum[state][0]]
+                    print(~chess.BB_SQUARES[qpc.qnum[state][0]])
+        print('a: ', temp_occupied_co)
+
+        our_pieces = self.occupied_co.copy()[self.turn]
+        our_q_pieces = temp_occupied_co.copy()[self.turn]
+
+        our_pieces_L = self.occupied_co.copy()
+        our_q_pieces_L = temp_occupied_co.copy()
+
+        # Generate piece moves.
+        non_pawns = our_pieces & ~self.pawns & from_mask
+        for from_square in scan_reversed(non_pawns):
+            self.occupied = our_q_pieces_L[0] | our_q_pieces_L[1]
+            moves = self.attacks_mask(from_square) & ~our_q_pieces & to_mask
+            self.occupied = our_pieces_L[0] | our_pieces_L[1]
+            for to_square in scan_reversed(moves):
+                yield Move(from_square, to_square)
+
+        # Generate castling moves.
+        if from_mask & self.kings:
+            yield from self.generate_castling_moves(from_mask, to_mask)
+
+        # The remaining moves are all pawn moves.
+        pawns = self.pawns & self.occupied_co[self.turn] & from_mask
+        if not pawns:
+            return
+
+        # Generate pawn captures.
+        capturers = pawns
+        for from_square in scan_reversed(capturers):
+            targets = (
+                BB_PAWN_ATTACKS[self.turn][from_square] &
+                self.occupied_co[not self.turn] & to_mask)
+
+            for to_square in scan_reversed(targets):
+                if square_rank(to_square) in [0, 7]:
+                    yield Move(from_square, to_square, QUEEN)
+                    yield Move(from_square, to_square, ROOK)
+                    yield Move(from_square, to_square, BISHOP)
+                    yield Move(from_square, to_square, KNIGHT)
+                else:
+                    yield Move(from_square, to_square)
+
+        # Prepare pawn advance generation.
+        if self.turn == WHITE:
+            single_moves = pawns << 8 & ~self.occupied
+            double_moves = single_moves << 8 & ~self.occupied & (BB_RANK_3 | BB_RANK_4)
+        else:
+            single_moves = pawns >> 8 & ~self.occupied
+            double_moves = single_moves >> 8 & ~self.occupied & (BB_RANK_6 | BB_RANK_5)
+
+        single_moves &= to_mask
+        double_moves &= to_mask
+
+        # Generate single pawn moves.
+        for to_square in scan_reversed(single_moves):
+            from_square = to_square + (8 if self.turn == BLACK else -8)
+
+            if square_rank(to_square) in [0, 7]:
+                yield Move(from_square, to_square, QUEEN)
+                yield Move(from_square, to_square, ROOK)
+                yield Move(from_square, to_square, BISHOP)
+                yield Move(from_square, to_square, KNIGHT)
+            else:
+                yield Move(from_square, to_square)
+
+        # Generate double pawn moves.
+        for to_square in scan_reversed(double_moves):
+            from_square = to_square + (16 if self.turn == BLACK else -16)
+            yield Move(from_square, to_square)
+
+        # Generate en passant captures.
+        if self.ep_square:
+            yield from self.generate_pseudo_legal_ep(from_mask, to_mask)
+
+class QBoardWidget(hichess.BoardWidget):
+
+    def __init__(self) -> None:
+        super().__init__()
+        self.board = QchessBoard(fen=chess.STARTING_FEN)
+
+    split_turn = False # //HACK use this instance in mainWindow
+    qpcs = [] # //TODO organize code to only have req stuff in main window, and board related stuff here
     moveMade = QtCore.Signal(chess.Move)
     cellWidgetClickedSig = QtCore.Signal(hichess.CellWidget)
+
+    '''
+    def gen_pseudo_legal_move(self, from_mask, to_mask):
 
     def pieceCanBePushedTo(self, w: CellWidget):
         """ Yields the numbers of squares that the piece on the cell widget can be legally pushed
         to. """
+        our_pieces = self.board.occupied_co[self.board.turn]
+        our_q_pieces = our_pieces
 
-        # //TODO find a way to add legal moves for entanglement here
-        for move in self.board.legal_moves:
-            if move.from_square == self.squareOf(w):
-                yield move.to_square
+        
+        from_mask = chess.BB_ALL
+        to_mask = chess.BB_ALL
+        king_mask = self.board.kings & self.board.occupied_co[self.board.turn]
+        if king_mask: 
+            king = chess.msb(king_mask)
+            blockers = self.board._slider_blockers(king)
+            checkers = self.board.attackers_mask(not self.board.turn, king)
+            if checkers:
+                for move in self.board._generate_evasions(king, checkers, from_mask, to_mask):
+                    if self.board._is_safe(king, blockers, move):
+                        yield move
+            else:
+                non_pawns = our_pieces & ~self.board.pawns & from_mask
+                if self.board._is_safe(king, blockers, move):
+                    for qpc in self.qpcs:
+                        if qpc.qnum[list(qpc.qnum.keys())[0]] !=1:
+                            for state in qpc.qnum.keys():
+                                our_q_pieces &= chess.BB_SQUARES[qpc.qnum[state][0]]
 
+                    # Generate piece moves.
+                    print(non_pawns)
+                    for from_square in chess.scan_reversed(non_pawns):
+                        moves = self.board.attacks_mask(from_square) & ~our_pieces & to_mask
+                        for to_square in chess.scan_reversed(moves):
+                            if from_square == self.squareOf(w):
+                                yield to_square
+        else:
+            print("dafaq")
+        # # //TODO find a way to add legal moves for entanglement here
+        # for move in self.board.legal_moves:
+        #     if move.from_square == self.squareOf(w):
+        #         yield move.to_square
+    '''
     def _push(self, move: chess.Move) -> None:
         self._updateJustMovedCells(False)
+        # print(self.board.occupied_co[self.board.turn])
 
         turn = self.board.turn
 
@@ -94,6 +240,7 @@ class BoardWidget_new(hichess.BoardWidget):
     @QtCore.Slot()
     def _onCellWidgetToggled(self, w: CellWidget, toggled: bool):
         if toggled:
+            self.cellWidgetClickedSig.emit(w)
             if self.board.turn != w.getPiece().color or not self._isCellAccessible(w):
                 w.setChecked(False)
                 return
@@ -118,7 +265,6 @@ class BoardWidget_new(hichess.BoardWidget):
         else:
             self.unhighlightCells()
 
-
 class MainWindow(QMainWindow):
     def __init__(self, parent=None):
         super(MainWindow, self).__init__(parent)
@@ -129,7 +275,7 @@ class MainWindow(QMainWindow):
         self.mainLayout = QVBoxLayout()
 
         # Initialize board
-        self.boardWidget = BoardWidget_new()
+        self.boardWidget = QBoardWidget()
         #quant stuff here plis
         self.Qpieces = []
         self.quantum_mode = False
@@ -169,6 +315,7 @@ class MainWindow(QMainWindow):
         if cellWid.getPiece() is not None:
             q_pc = quantum_obj(self.boardWidget.squareOf(cellWid), cellWid.getPiece())
             self.Qpieces.append(q_pc)
+            self.boardWidget.board.qpcs.append(q_pc)
 
     def updateQboard(self, turn):
         '''
@@ -188,9 +335,9 @@ class MainWindow(QMainWindow):
         '''
         Handles all special moves for quantum chess
         '''
-        print(self.boardWidget.board.move_stack, len(self.boardWidget.board.move_stack))
+        # print(self.boardWidget.board.move_stack, len(self.boardWidget.board.move_stack))
         qObj, qObj_state = self.findQobj(move.from_square)
-        print(qObj.piece, qObj.qnum[qObj_state][1])
+        # print(qObj.piece, qObj.qnum[qObj_state][1])
 
         # Attacking, measures if attacked/attacking has more than one state/add 
         # //HACK Should probably be another function (?)
@@ -233,6 +380,7 @@ class MainWindow(QMainWindow):
                 qObj.qnum[qObj_state][0] = move.to_square
         else:
             self.split_move(qObj, qObj_state, move.to_square, self.previous_move.to_square)
+        self.boardWidget.board.qpcs = self.Qpieces
 
     def split_move(self, qObj, qObj_State, square1, square2):
         qObj.split(qObj_State, square1, square2)
@@ -252,8 +400,11 @@ class MainWindow(QMainWindow):
             self.quantum_mode = not self.quantum_mode
             # self.split_turn = True
 
+    def on_click_rel(self, w):
+        a, b = self.findQobj(self.boardWidget.squareOf(w))
+        print(a.piece, a.qnum[b])
 
-
+            
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
@@ -261,6 +412,6 @@ if __name__ == "__main__":
     mainWindow.show()
     # mainWindow.boardWidget.setPieceAt(chess.D4,chess.Piece(chess.PAWN,chess.WHITE))    
     # mainWindow.boardWidget.moveMade.connect(mainWindow.sayHi)
-    # mainWindow.boardWidget.cellWidgetClickedSig.connect(mainWindow.on_click_rel)
+    mainWindow.boardWidget.cellWidgetClickedSig.connect(mainWindow.on_click_rel)
 
     sys.exit(app.exec_())
