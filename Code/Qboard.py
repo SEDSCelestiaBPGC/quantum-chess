@@ -23,25 +23,6 @@ from chess import *
 class QchessBoard(chess.Board):
     qpcs = []
 
-    def attacks_mask(self, square: Square) -> Bitboard:
-        bb_square = BB_SQUARES[square]
-
-        if bb_square & self.pawns:
-            color = bool(bb_square & self.occupied_co[WHITE])
-            return BB_PAWN_ATTACKS[color][square]
-        elif bb_square & self.knights:
-            return BB_KNIGHT_ATTACKS[square]
-        elif bb_square & self.kings:
-            return BB_KING_ATTACKS[square]
-        else:
-            attacks = 0
-            if bb_square & self.bishops or bb_square & self.queens:
-                attacks = BB_DIAG_ATTACKS[square][BB_DIAG_MASKS[square] & self.occupied]
-            if bb_square & self.rooks or bb_square & self.queens:
-                attacks |= (BB_RANK_ATTACKS[square][BB_RANK_MASKS[square] & self.occupied] |
-                            BB_FILE_ATTACKS[square][BB_FILE_MASKS[square] & self.occupied])
-            return attacks
-
     def generate_pseudo_legal_moves(self, from_mask = chess.BB_ALL, to_mask = chess.BB_ALL ):
         temp_occupied_co = self.occupied_co.copy()
         print('p: ' , temp_occupied_co)
@@ -135,53 +116,10 @@ class QBoardWidget(hichess.BoardWidget):
     qpcs = [] # //TODO organize code to only have req stuff in main window, and board related stuff here
     moveMade = QtCore.Signal(chess.Move)
     cellWidgetClickedSig = QtCore.Signal(hichess.CellWidget)
+    illegalClassicalMove = QtCore.Signal(chess.Move)
 
-    '''
-    def gen_pseudo_legal_move(self, from_mask, to_mask):
-
-    def pieceCanBePushedTo(self, w: CellWidget):
-        """ Yields the numbers of squares that the piece on the cell widget can be legally pushed
-        to. """
-        our_pieces = self.board.occupied_co[self.board.turn]
-        our_q_pieces = our_pieces
-
-        
-        from_mask = chess.BB_ALL
-        to_mask = chess.BB_ALL
-        king_mask = self.board.kings & self.board.occupied_co[self.board.turn]
-        if king_mask: 
-            king = chess.msb(king_mask)
-            blockers = self.board._slider_blockers(king)
-            checkers = self.board.attackers_mask(not self.board.turn, king)
-            if checkers:
-                for move in self.board._generate_evasions(king, checkers, from_mask, to_mask):
-                    if self.board._is_safe(king, blockers, move):
-                        yield move
-            else:
-                non_pawns = our_pieces & ~self.board.pawns & from_mask
-                if self.board._is_safe(king, blockers, move):
-                    for qpc in self.qpcs:
-                        if qpc.qnum[list(qpc.qnum.keys())[0]] !=1:
-                            for state in qpc.qnum.keys():
-                                our_q_pieces &= chess.BB_SQUARES[qpc.qnum[state][0]]
-
-                    # Generate piece moves.
-                    print(non_pawns)
-                    for from_square in chess.scan_reversed(non_pawns):
-                        moves = self.board.attacks_mask(from_square) & ~our_pieces & to_mask
-                        for to_square in chess.scan_reversed(moves):
-                            if from_square == self.squareOf(w):
-                                yield to_square
-        else:
-            print("dafaq")
-        # # //TODO find a way to add legal moves for entanglement here
-        # for move in self.board.legal_moves:
-        #     if move.from_square == self.squareOf(w):
-        #         yield move.to_square
-    '''
     def _push(self, move: chess.Move) -> None:
         self._updateJustMovedCells(False)
-        # print(self.board.occupied_co[self.board.turn])
 
         turn = self.board.turn
 
@@ -205,7 +143,9 @@ class QBoardWidget(hichess.BoardWidget):
                 return
 
         if not self.board.is_legal(move) or move.null():
-            raise IllegalMove(f"illegal move {move} by ")
+            # //HACK this is the only way for a move to be illegal (without playtesting)
+            self.illegalClassicalMove.emit(move)
+            # raise IllegalMove(f"illegal move {move} by ")
         # logging.debug(f"\n{self.board.lan(move)} ({move.from_square} -> {move.to_square})")
 
         san = self.board.san(move)
@@ -307,6 +247,7 @@ class MainWindow(QMainWindow):
         self.setCentralWidget(self.centralWidget)
 
         self.boardWidget.moveMade.connect(self.checkQmove)
+        self.boardWidget.illegalClassicalMove.connect(self.entangle_move)
     
     def setQboard(self, cellWid):
         '''
@@ -387,7 +328,19 @@ class MainWindow(QMainWindow):
         self.split_turn = False
         self.boardWidget.split_turn = False
         self.quantum_mode = False
-        pass
+
+    def entangle_move(self, move):
+        qObj, qObj_state = self.findQobj(move.from_square)
+        qpc_squares = self.boardWidget.board.occupied & chess.SquareSet.between(move.from_square, move.to_square)
+        if len(chess.SquareSet(qpc_squares)) >1:
+            self.boardWidget.board.move_stack.pop()
+            return
+
+        for qpc_square in chess.SquareSet(qpc_squares):
+            if not self.split_turn:
+                qObj.entangle_oneblock(qObj_state, move.to_square, self.findQobj(qpc_square)) 
+
+
 
     def findQobj(self, square):
         for pc in self.Qpieces:
