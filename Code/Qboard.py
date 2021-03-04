@@ -289,6 +289,7 @@ class MainWindow(QMainWindow):
 
         if self.findQobj(move.to_square) is not None: #atk
             if self.boardWidget.entangle_move: #meas in b/w when atking
+               # //TODO Dont let entangle if more than two pieces in middle
                for sq in qpc_squares:
                 qObj_mid, _ = self.findQobj(sq)
                 qObj_mid.meas()
@@ -335,7 +336,8 @@ class MainWindow(QMainWindow):
                 self.boardWidget.previous_entangle_move = False
 
         self.boardWidget.board.qpcs = self.Qpieces
-        # self.updateQboard(self.boardWidget.board.turn) # //FIXME only update when needed
+        self.updateQboard(self.boardWidget.board.turn)
+
     def attackMove(self, move):
         '''
         Attacking, measures if attacked/attacking has more than one state/add 
@@ -355,6 +357,7 @@ class MainWindow(QMainWindow):
                 self.checkQmove(move)
             for qpc in self.Qpieces:
                 print(qpc.piece, qpc.qnum)
+            print(len(self.Qpieces))
             return
 
         if  qObj_attacked.qnum[qObj_attacked_state][1] !=1:
@@ -367,6 +370,7 @@ class MainWindow(QMainWindow):
             self.checkQmove(move)
             for qpc in self.Qpieces:
                 print(qpc.piece, qpc.qnum)
+            print(len(self.Qpieces))
             return
 
         del qObj_attacked.qnum[qObj_attacked_state]
@@ -383,9 +387,7 @@ class MainWindow(QMainWindow):
         print('Split_complete')
 
     def entangleMove(self, move):
-        # //BUG cannot entangle more than once
         # //BUG measure on two non-classical entangle pcs doesn't change the entagling obj
-        # //BUG entangle dosnt create a copy on init location on board (without update)
         qObj, qObj_state = self.findQobj(move.from_square)
 
         qpc_squares = self.boardWidget.board.occupied & int(chess.SquareSet.between(move.from_square, move.to_square))
@@ -400,6 +402,8 @@ class MainWindow(QMainWindow):
             qObj.entangle_oneblock(qObj_state, move.to_square, qObj_other, qObj_other_state) 
             self.updateQboard(self.boardWidget.board.turn)
             print(qObj.qnum, 'other:', qObj_other.qnum)
+            self.boardWidget.previous_entangle_move = False
+            self.boardWidget.entangle_move = False
         else:
             prev = self.previous_move
             qpc_squares2 = self.boardWidget.board.occupied & int(chess.SquareSet.between(prev.from_square, prev.to_square))
@@ -414,6 +418,8 @@ class MainWindow(QMainWindow):
 
             qObj.entangle_twoblock(qObj_state, move.to_square, prev.to_square, qObj_other, qObj_other_state, qObj_other2, qObj_other2_state)
             print('entangled2')
+            self.boardWidget.previous_entangle_move = False
+            self.boardWidget.entangle_move = False
 
     def getSquareFromSquareSet(self, bigInt): #convinence method
         square_set = chess.SquareSet(bigInt)
