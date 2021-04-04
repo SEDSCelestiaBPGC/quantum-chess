@@ -418,6 +418,9 @@ class MainWindow(QMainWindow):
 
             qObj.entangle_twoblock(qObj_state, move.to_square, prev.to_square, qObj_other, qObj_other_state, qObj_other2, qObj_other2_state)
             print('entangled2')
+            self.split_turn = False
+            self.quantum_mode = False
+            self.updateQboard(self.boardWidget.board.turn)
             self.boardWidget.previous_entangle_move = False
             self.boardWidget.entangle_move = False
             self.split_turn = False

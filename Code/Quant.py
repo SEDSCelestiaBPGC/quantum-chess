@@ -64,8 +64,10 @@ class quantum_obj:
         self.qnum[i_add + '1'][1] = b 
         del self.qnum[i_add]
 
-        obj.ent += [(self, i_add+'1', obj_add)]   # make sure that obj is quantumobj while calling!
-        self.ent += [(obj, obj_add, i_add+'1')]
+        last_state = obj_add[:-1] + str(int(not(int(obj_add[-1]))))
+
+        obj.ent += [(self, i_add+'1', obj_add), (self, i_add+'0', last_state)]  # make sure that obj is quantumobj while calling!
+        self.ent += [(obj, obj_add, i_add+'1'), (obj, last_state, i_add+'0')]
 
 
     def entangle_twoblock(self, i_add, pos1, pos2, obj1, obj1_add, obj2, obj2_add):  #change pos parameter to address
@@ -93,18 +95,14 @@ class quantum_obj:
         After the move, 
         P[P at a1] = x * P[both Q and R are there] = x*y*z
         P[P at a3] = x * ( P[Q not at a2, R at b1] + 0.5 * P[Q, R not there] ) = x*(1-y)*z + 0.5*x*(1-y)*(1-z)
-        P[P at c1] = x * ( P[Q at a2, R not at b1] + 0.5 * P[Q, R not there] ) = x*y *(1-z) + 0.5*x*(1-y)*(1-z)
+        P[P at c1] = x * ( P[Q at a2, R not at b1] + 0.5 * P[Q, R not there] ) = x*y*(1-z) + 0.5*x*(1-y)*(1-z)
         
         #check
         Total prob = xyz + xz - xyz + xy - xyz + x - xy - xz + xyz
                    = x
 
-        # these hold up even if P, Q, R are classical
+        # These hold up even if P, Q, R are classical
         '''
-        
-        prob_i_pos = self.qnum[i_add][1]
-        prob_ob1 = obj1.qnum[obj1_add][1]
-        prob_ob2 = obj2.qnum[obj2_add][1]
 
         '''
         1. ob1 there, ob2 there - not possible (0)
@@ -118,6 +116,10 @@ class quantum_obj:
 
         '''
 
+        prob_i_pos = self.qnum[i_add][1]
+        prob_ob1 = obj1.qnum[obj1_add][1]
+        prob_ob2 = obj2.qnum[obj2_add][1]
+
         if obj1 == obj2:
             prob_pos1 = prob_i_pos*prob_ob2 + 0.5*prob_i_pos*(1 - prob_ob1 - prob_ob2)
             prob_pos2 = prob_i_pos*prob_ob1 + 0.5*prob_i_pos*(1 - prob_ob1 - prob_ob2)
@@ -128,9 +130,13 @@ class quantum_obj:
             self.qnum[i_add + '0'][1] = prob_pos1  
             self.qnum[i_add + '1'][0] = pos2
             self.qnum[i_add + '1'][1] = prob_pos2  
-            obj1.ent += [(self, i_add+'0', obj1_add)]             # obj1 cannot coexist with i_add+'0'
-            obj2.ent += [(self, i_add+'1', obj2_add)]             # obj2 cannot coexist with i_add+'1'
-            self.ent += [(obj1, obj1_add, i_add+'0'), (obj2, obj2_add, i_add+'1')]
+
+            last_state1 = obj1_add[:-1] + str(int(not(int(obj1_add[-1]))))
+            last_state2 = obj2_add[:-1] + str(int(not(int(obj2_add[-1]))))
+
+            obj1.ent += [(self, i_add+'0', obj1_add), (self, i_add+'1', last_state1)]             # obj1 cannot coexist with i_add+'0'
+            obj2.ent += [(self, i_add+'1', obj2_add), (self, i_add+'0', last_state2)]             # obj2 cannot coexist with i_add+'1'
+            self.ent += [(obj1, obj1_add, i_add+'0'), (obj1, last_state1, i_add+'1'), (obj2, obj2_add, i_add+'1'), (obj2, last_state2, i_add+'0')]
         
         else:
             prob_unmoved = prob_i_pos*prob_ob1*prob_ob2 
@@ -149,9 +155,12 @@ class quantum_obj:
             self.qnum[i_add + '01'][1] = prob_pos1
             self.qnum[i_add + '10'][1] = prob_pos2
 
-            obj1.ent += [(self, i_add+'01', obj1_add)]          # obj1 cannot coexist with i_add+'01'
-            obj2.ent += [(self, i_add+'10', obj2_add)]          # obj2 cannot coexist with i_add+'10'
-            self.ent += [(obj1, obj1_add, i_add+'01'), (obj2, obj2_add, i_add+'10')]
+            last_state1 = obj1_add[:-1] + str(int(not(int(obj1_add[-1]))))
+            last_state2 = obj2_add[:-1] + str(int(not(int(obj2_add[-1]))))
+
+            obj1.ent += [(self, i_add+'01', obj1_add), (self, i_add+'00', last_state1)]          # obj1 cannot coexist with i_add+'01'
+            obj2.ent += [(self, i_add+'10', obj2_add), (self, i_add+'00', last_state2)]          # obj2 cannot coexist with i_add+'10'
+            self.ent += [(obj1, obj1_add, i_add+'01'), (obj1, last_state1, i_add+'00'), (obj2, obj2_add, i_add+'10'), (obj2, last_state2, i_add+'00')]
 
         del self.qnum[i_add]
         
@@ -165,7 +174,7 @@ class quantum_obj:
     C - 0.25 --> (after killing A) 0.5 
     '''
 
-    def detangle(self, add):
+    def detangle(self, add, obj):
         probs = 0
         all_states = list(self.qnum.keys())
         for i in all_states:
@@ -176,7 +185,13 @@ class quantum_obj:
                 probs += self.qnum[i][1]
         for i in self.qnum:
             self.qnum[i][1] /= probs
-        
+        # for i in range(len(self.ent)):
+        #     # nested entanglement to be handled here
+        #     if self.ent[i][0] == obj:
+        #         self.ent.remove(self.ent[i])
+
+    # 2block fixage
+    # peek at nested entanglement (>2 degrees of ent across >2 pieces)
 
     def meas(self):
         '''
@@ -305,11 +320,12 @@ class quantum_obj:
             if final_state.startswith(self.ent[i][2]):
                 print("Piece1 ent list : ", self.ent[i][0].ent)
                 print("Entangled guy's states : ", self.ent[i][0].qnum)
-                self.ent[i][0].detangle(self.ent[i][1])    
+                self.ent[i][0].detangle(self.ent[i][1], self)    
                 print("Entangled guy's states : ", self.ent[i][0].qnum)
                 
         final_pos = self.qnum[final_state][0]
         self.qnum.clear()
+        self.ent.clear()
         self.qnum['0'] = [final_pos, 1]
         print("States of piece2 after measuring : ", self.qnum)
 
