@@ -420,6 +420,9 @@ class MainWindow(QMainWindow):
             print('entangled2')
             self.boardWidget.previous_entangle_move = False
             self.boardWidget.entangle_move = False
+            self.split_turn = False
+            self.quantum_mode = False
+            self.updateQboard(self.boardWidget.board.turn)
 
     def getSquareFromSquareSet(self, bigInt): #convinence method
         square_set = chess.SquareSet(bigInt)
