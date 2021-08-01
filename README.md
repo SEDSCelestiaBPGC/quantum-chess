@@ -19,6 +19,15 @@ Chess is a much loved, classic game, but what happens when we give it a quantum 
 - Entanglement of two pieces means that measuring either of the pieces will determine the state of the other.
 - A piece is measured in two cases - either when it is perfoming a move to kill another piece, or when it is being killed.
 
+## How to run
+Qiskit is not compatible with Python 3.9
+
+Use v3.8 or less.
+
+`pip install chess`
+
+`pip install qiskit`
+
 ## References
 - https://quantumchess.net/
 - https://truly-quantum-chess.sloppy.zone/
