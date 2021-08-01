@@ -24,9 +24,11 @@ Qiskit is not compatible with Python 3.9
 
 Use v3.8 or less.
 
+`pip install qiskit`
+
 `pip install chess`
 
-`pip install qiskit`
+`pip install pyside2`
 
 ## References
 - https://quantumchess.net/
