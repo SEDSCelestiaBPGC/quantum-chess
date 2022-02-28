@@ -13,7 +13,7 @@ Chess is a much loved, classic game, but what happens when we give it a quantum 
 - On a turn, a player can choose to either make a normal move or a quantum move.
 
 #### Quantum Moves
-- In the quantum mode, a piece can be moved to different positions in the same move.
+- In the quantum mode (toggled by pressing the shift key), a piece can be moved to different positions in the same move.
 - If both positions are unobstructed, the probability of the piece being in each of the new positions is 0.5.
 - If obstructed by a quantum piece, the two pieces get 'entangled' and the piece being moved is split into two, each with a probability dependent on the probability of the obstructing piece.
 - Entanglement of two pieces means that measuring either of the pieces will determine the state of the other.
