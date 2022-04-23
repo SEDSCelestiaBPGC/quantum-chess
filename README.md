@@ -21,7 +21,9 @@ Chess is a much loved, classic game, but what happens when we give it a quantum 
 
 ## How to run
 Clone the repo:
-```git clone https://github.com/SEDSCelestiaBPGC/quantum-chess.git QC```
+```bash
+git clone https://github.com/SEDSCelestiaBPGC/quantum-chess.git QC
+```
 
 Qiskit is not compatible with Python 3.9.
 
