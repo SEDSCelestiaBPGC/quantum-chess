@@ -20,15 +20,33 @@ Chess is a much loved, classic game, but what happens when we give it a quantum 
 - A piece is measured in two cases - either when it is perfoming a move to kill another piece, or when it is being killed.
 
 ## How to run
-Qiskit is not compatible with Python 3.9
+Clone the repo:
+```git clone https://github.com/SEDSCelestiaBPGC/quantum-chess.git QC```
+
+Qiskit is not compatible with Python 3.9.
 
 Use v3.8 or less.
 
-`pip install qiskit`
+**Recommendation:**
+Use Anaconda to create a virtual environment for python v3.8 or less, install relevant packages and run the game.
 
-`pip install chess`
+Install: [Official Website Docs](https://docs.anaconda.com/anaconda/install/)
 
-`pip install pyside2`
+Create a new python environment with desired python version:
+```bash
+conda create -n quantum-chess python=3.8
+conda activate quantum-chess
+
+pip install qiskit
+pip install chess
+pip install pyside2
+```
+Navigate to the cloned repo folder and run the game:
+```bash
+cd QC
+python Code/Qboard.py
+```
+
 
 ## References
 - https://quantumchess.net/
